@@ -1,4 +1,8 @@
 use actix_web::{get, App, HttpServer, Responder};
+use anyhow::Result;
+
+mod config;
+mod error;
 
 #[get("/")]
 async fn index() -> impl Responder {
@@ -6,9 +10,14 @@ async fn index() -> impl Responder {
 }
 
 #[actix_web::main]
-async fn main() -> std::io::Result<()> {
+async fn main() -> Result<()> {
+	let config = config::ServerConf::load("./config/config.dhall")?;
+	println!("{:?}", config);
+
 	HttpServer::new(|| App::new().service(index))
-		.bind("127.0.0.1:3000")?
+		.bind(&config)?
 		.run()
-		.await
+		.await?;
+
+	Ok(())
 }
