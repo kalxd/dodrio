@@ -8,12 +8,12 @@ use serde_dhall;
 
 /// 数据库配置。
 #[derive(Debug, Deserialize)]
-struct DBConf {
-	host: IpAddr,
-	port: u16,
-	user: String,
-	password: String,
-	dbname: String,
+pub struct DBConf {
+	pub host: IpAddr,
+	pub port: u16,
+	pub user: String,
+	pub password: String,
+	pub dbname: String,
 }
 
 /// 配置选项。
@@ -21,7 +21,7 @@ struct DBConf {
 pub struct ServerConf {
 	port: u16,
 	host: IpAddr,
-	db: DBConf,
+	pub db: DBConf,
 }
 
 impl ServerConf {

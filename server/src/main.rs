@@ -1,20 +1,23 @@
-use actix_web::{get, App, HttpServer, Responder};
+use actix_web::{get, web, App, HttpServer, Responder};
 use anyhow::Result;
 
 mod config;
-mod error;
+mod state;
 
 #[get("/")]
-async fn index() -> impl Responder {
-	"hello world"
+async fn index(state: web::Data<state::State>) -> impl Responder {
+	let client = state.pool.get().await.unwrap();
+	let rows = client.query(r#"select 'hello'::TEXT"#, &[]).await.unwrap();
+	let value: String = rows[0].get(0);
+	value
 }
 
 #[actix_web::main]
 async fn main() -> Result<()> {
 	let config = config::ServerConf::load("./config/config.dhall")?;
-	println!("{:?}", config);
+	let state = state::State::create(&config);
 
-	HttpServer::new(|| App::new().service(index))
+	HttpServer::new(move || App::new().data(state.clone()).service(index))
 		.bind(&config)?
 		.run()
 		.await?;
