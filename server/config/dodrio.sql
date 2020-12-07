@@ -19,15 +19,29 @@ SET row_security = off;
 SET default_tablespace = '';
 
 --
+-- Name: 会话; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public."会话" (
+    sid text NOT NULL,
+    "用户id" integer NOT NULL,
+    "创建日期" time with time zone DEFAULT now() NOT NULL
+);
+
+
+--
 -- Name: 用户; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public."用户" (
     id integer NOT NULL,
-    "账户" character varying(32) NOT NULL,
+    "账号" character varying(32) NOT NULL,
     "密码" text NOT NULL,
-    "用户名" character varying(32) DEFAULT NULL::character varying,
-    "创建日期" time with time zone DEFAULT now() NOT NULL
+    "用户名" character varying(32),
+    "电子邮箱" character varying(32) NOT NULL,
+    "创建日期" time with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT "用户_密码_check" CHECK ((length("密码") > 8)),
+    CONSTRAINT "用户_电子邮箱_check" CHECK ((regexp_match(("电子邮箱")::text, '\w+@\w+'::text) IS NOT NULL))
 );
 
 
@@ -59,19 +73,35 @@ ALTER TABLE ONLY public."用户" ALTER COLUMN id SET DEFAULT nextval('public."�
 
 
 --
--- Name: 用户 用户_pk; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: 会话 会话_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public."会话"
+    ADD CONSTRAINT "会话_pkey" PRIMARY KEY (sid);
+
+
+--
+-- Name: 用户 用户_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public."用户"
-    ADD CONSTRAINT "用户_pk" PRIMARY KEY (id);
+    ADD CONSTRAINT "用户_pkey" PRIMARY KEY (id);
 
 
 --
--- Name: 用户 用户_un; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: 用户 用户_账号_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public."用户"
-    ADD CONSTRAINT "用户_un" UNIQUE ("账户");
+    ADD CONSTRAINT "用户_账号_key" UNIQUE ("账号");
+
+
+--
+-- Name: 会话 会话_用户id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public."会话"
+    ADD CONSTRAINT "会话_用户id_fkey" FOREIGN KEY ("用户id") REFERENCES public."用户"(id);
 
 
 --
