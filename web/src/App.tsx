@@ -1,6 +1,6 @@
 import React from 'react';
+import { Button } from '@blueprintjs/core';
 
-const App = (
-	<h1>Hello World</h1>);
+const App = (<Button text="hello" />);
 
 export default App;
