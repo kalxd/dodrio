@@ -1,18 +1,38 @@
 //! 异常与错误。
-use actix_web::ResponseError;
-use serde::Serialize;
+use actix_web::{dev::Body, http::StatusCode, web::HttpResponse, ResponseError};
+use serde_json::json;
 
-/// 错误统一格式。
-#[derive(Serialize)]
-struct ErrorBody<'a>(&'a str);
+pub type Res<T> = std::result::Result<T, Error>;
 
-pub enum NotFoundE {
-	User,
-	Session,
+/// 业务错误类型。
+#[derive(Debug)]
+pub enum Error {
+	/// 内部服务错误。
+	ServerE(String),
 }
 
-/// 由于自身问题导致的异常。
-pub enum AppException {
-	/// 配置相关异常。
-	ConfigE,
+impl std::fmt::Display for Error {
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		let msg = match self {
+			Self::ServerE(msg) => msg,
+		};
+
+		write!(f, "内部错误：{}", msg)
+	}
+}
+
+impl ResponseError for Error {
+	fn status_code(&self) -> StatusCode {
+		match self {
+			Self::ServerE(_) => StatusCode::INTERNAL_SERVER_ERROR,
+		}
+	}
+
+	fn error_response(&self) -> HttpResponse<Body> {
+		let msg = format!("{}", &self);
+		let code = self.status_code();
+		let json = json!({ "msg": msg });
+
+		HttpResponse::build(code).json(json)
+	}
 }
