@@ -15,6 +15,18 @@ const config = {
 						presets: ["@babel/preset-react", "@babel/preset-typescript"]
 					}
 				}
+			},
+			{
+				test: /\.css$/,
+				use: {
+					loader: "css-loader"
+				}
+			},
+			{
+				test: /\.(ttf|eot|woff(2)?|svg)(\?v=\d+\.\d+\.\d+)?$/,
+				use: {
+					loader: "file-loader"
+				}
 			}
 		]
 	},
