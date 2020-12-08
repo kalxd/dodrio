@@ -11,6 +11,16 @@ pub enum Error {
 	ServerE(String),
 }
 
+impl<E> From<E> for Error
+where
+	E: std::error::Error,
+{
+	fn from(err: E) -> Self {
+		let msg = format!("{}", err);
+		Self::ServerE(msg)
+	}
+}
+
 impl std::fmt::Display for Error {
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
 		let msg = match self {
