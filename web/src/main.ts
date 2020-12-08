@@ -1,11 +1,5 @@
-class User {
-	id: String;
+import {render} from 'react-dom';
+import App from './App';
 
-	constructor(id: String) {
-		this.id = id;
-	}
-}
-
-let user: User = new User("id")
-
-console.log(user);
+const body = document.body;
+render(App, body);
