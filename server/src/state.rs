@@ -5,11 +5,12 @@ use deadpool_postgres::{Manager, ManagerConfig, Pool, RecyclingMethod};
 use tokio_postgres::{Config, NoTls};
 
 use crate::config::ServerConf;
+use crate::helper::DB;
 
 #[derive(Clone)]
 pub struct State {
 	/// 数据库连接池。
-	pub pool: Pool,
+	pub db: DB,
 }
 
 impl State {
@@ -30,6 +31,6 @@ impl State {
 
 		let pool = Pool::new(mgr, 16);
 
-		Self { pool }
+		Self { db: pool.into() }
 	}
 }

@@ -4,6 +4,7 @@ use anyhow::Result;
 mod api;
 mod config;
 // mod error;
+mod helper;
 mod state;
 
 #[actix_web::main]
