@@ -1,6 +1,7 @@
 {
 	"scripts": {
-		"init": "tsc"
+		"build": "npx webpack",
+		"watch": "npx webpack -w"
 	},
 	"devDependencies": {
 		"@babel/core": "^7.12.9",
