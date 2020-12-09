@@ -39,9 +39,10 @@ impl DB {
 		T: ToStatement + ?Sized,
 		R: TryFrom<Row, Error = Error>,
 	{
-		let mut rows: Vec<R> = self.query(statement, params).await?;
-		let row = rows.pop();
-		Ok(row)
+		let client = self.get().await?;
+		let mut rows = client.query(statement, params).await?;
+
+		rows.pop().map(TryInto::try_into).transpose()
 	}
 }
 
