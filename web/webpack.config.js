@@ -1,5 +1,6 @@
 const Path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const MiniCssExtraPlugin = require("mini-css-extract-plugin");
 
 const config = {
 	mode: "development",
@@ -18,9 +19,7 @@ const config = {
 			},
 			{
 				test: /\.css$/,
-				use: {
-					loader: "css-loader"
-				}
+				use: [MiniCssExtraPlugin.loader, "css-loader"]
 			},
 			{
 				test: /\.(ttf|eot|woff(2)?|svg)(\?v=\d+\.\d+\.\d+)?$/,
@@ -45,7 +44,9 @@ const config = {
 			title: "",
 			hash: true,
 			template: "./webpack/template.html"
-		})
+		}),
+
+		new MiniCssExtraPlugin()
 	]
 };
 
