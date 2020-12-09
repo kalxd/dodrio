@@ -44,6 +44,26 @@ impl DB {
 
 		rows.pop().map(TryInto::try_into).transpose()
 	}
+
+	/// 仅用于单值的查询，例如查询用户是否存在。
+	///
+	/// ```
+	/// if db.query_b("select 1", &[]).await? {
+	///     println!("存在！");
+	/// } else {
+	///     println!("不存在！");
+	/// }
+	/// ```
+	pub async fn query_b<T>(&'_ self, statement: &'_ T, params: &'_ [&'_ (dyn ToSql + '_ + Sync)]) -> Res<bool>
+	where
+		T: ToStatement + ?Sized,
+	{
+		let client = self.get().await?;
+		let mut rows = client.query(statement, params).await?;
+
+		let r = rows.pop().map(|row| row.get(0)).unwrap_or(false);
+		Ok(r)
+	}
 }
 
 impl From<Pool> for DB {
