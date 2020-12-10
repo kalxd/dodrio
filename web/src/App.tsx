@@ -1,23 +1,20 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router } from "react-router-dom";
-import Button from '@material-ui/core/Button';
+import React from 'react';
+import { BrowserRouter as Router, Route } from "react-router-dom";
+import Container from "@material-ui/core/Container";
 
 import Nav from "./Nav";
 
-function Counter() {
-	const [count, setCount] = useState(0);
-
-	return (
-		<Button onClick={() => setCount(count + 1)}>
-			{count}
-		</Button>
-	);
-}
+import Signup from "./page/Signup";
 
 const App = (
 	<Router>
 		<Nav />
-		<Counter />
+
+		<Container>
+			<Route path="/signup">
+				<Signup />
+			</Route>
+		</Container>
 	</Router>
 );
 
