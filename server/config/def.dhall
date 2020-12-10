@@ -1,15 +1,4 @@
-let DB
-    : Type
-    = { host : Text
-      , port : Natural
-      , user : Text
-      , dbname : Text
-      , password : Text
-      }
-
-let Config
-    : Type
-    = { host : Text, port : Natural, db : DB }
+let Config = ./ConfigDef.dhall
 
 let config
     : Config
