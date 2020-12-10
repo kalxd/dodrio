@@ -2,6 +2,8 @@
 use deadpool_postgres::Pool;
 use tokio_postgres::{error::SqlState, row::Row, types::ToSql, ToStatement};
 
+use std::convert::TryFrom;
+
 use crate::error::{CatchErr, Error, Res};
 
 #[derive(Clone)]
@@ -47,11 +49,12 @@ impl DB {
 	) -> Res<Option<R>>
 	where
 		T: ToStatement + ?Sized,
-		R: From<Row>,
+		R: TryFrom<Row>,
+		R::Error: std::error::Error,
 	{
 		let mut rows = self.raw_query(statement, params).await?;
 
-		Ok(rows.pop().map(Into::into))
+		rows.pop().map(R::try_from).transpose().map_err(Into::into)
 	}
 
 	/*

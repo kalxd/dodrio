@@ -1,5 +1,7 @@
 use serde::Serialize;
-use tokio_postgres::row::Row;
+use tokio_postgres::{error::Error, row::Row};
+
+use std::convert::TryFrom;
 
 /// 最为普通的用户。
 /// 可描述用户的最小单位。
@@ -10,13 +12,15 @@ pub struct User {
 	pub username: Option<String>,
 }
 
-impl From<Row> for User {
-	fn from(row: Row) -> Self {
-		let id = row.get("id");
-		let account = row.get("账号");
-		let username = row.get("用户名");
+impl TryFrom<Row> for User {
+	type Error = Error;
 
-		Self { id, account, username }
+	fn try_from(row: Row) -> Result<Self, Self::Error> {
+		let id = row.try_get("id")?;
+		let account = row.try_get("账号")?;
+		let username = row.try_get("用户名")?;
+
+		Ok(Self { id, account, username })
 	}
 }
 
