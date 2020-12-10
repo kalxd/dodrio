@@ -5,7 +5,7 @@ use tokio_postgres::{error::SqlState, row::Row, types::ToSql, ToStatement};
 
 use std::convert::{TryFrom, TryInto};
 
-use crate::error::{Error, Res};
+use crate::error::{CatchErr, Error, Res};
 
 #[derive(Clone)]
 pub struct DB(Pool);
@@ -19,7 +19,7 @@ impl DB {
 		let client = self.get().await?;
 		client.query(statement, params).await.map_err(|e| {
 			if e.code() == Some(&SqlState::UNIQUE_VIOLATION) {
-				return Error::Duplicate;
+				return Error::CatchE(CatchErr::DB_Duplicate);
 			} else {
 				return e.into();
 			}

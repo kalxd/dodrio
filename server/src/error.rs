@@ -4,11 +4,25 @@ use serde_json::json;
 
 pub type Res<T> = std::result::Result<T, Error>;
 
+/// 业务上关心的、需要捕猎的错误。
+#[derive(Debug)]
+pub enum CatchErr {
+	/// 数据库重复。
+	DB_Duplicate,
+}
+
+impl std::fmt::Display for CatchErr {
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		write!(f, "数据重复。")
+	}
+}
+
 /// 业务错误类型。
 #[derive(Debug)]
 pub enum Error {
-	/// 内部数据重复，常用于数据库操作。
-	Duplicate,
+	// 400错误
+	BadRequestE(String),
+	CatchE(CatchErr),
 	/// 内部服务错误。
 	ServerE(String),
 }
@@ -26,7 +40,8 @@ where
 impl std::fmt::Display for Error {
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
 		let msg = match self {
-			Self::Duplicate => "重复操作",
+			Self::BadRequestE(msg) => msg,
+			Self::CatchE(_) => "重复操作",
 			Self::ServerE(msg) => msg,
 		};
 
@@ -37,8 +52,8 @@ impl std::fmt::Display for Error {
 impl ResponseError for Error {
 	fn status_code(&self) -> StatusCode {
 		match self {
-			Self::Duplicate => StatusCode::INTERNAL_SERVER_ERROR,
-			Self::ServerE(_) => StatusCode::INTERNAL_SERVER_ERROR,
+			Self::BadRequestE(_) => StatusCode::BAD_REQUEST,
+			_ => StatusCode::INTERNAL_SERVER_ERROR,
 		}
 	}
 
