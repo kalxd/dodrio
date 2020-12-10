@@ -3,7 +3,9 @@
 
 use actix_web::Scope;
 
+mod user;
+
 /// 如果支持`const`就更精彩了。
 pub fn build() -> Scope {
-	Scope::new("_")
+	Scope::new("/_").service(user::build())
 }
