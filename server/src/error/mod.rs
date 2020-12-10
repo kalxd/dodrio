@@ -2,20 +2,11 @@
 use actix_web::{dev::Body, http::StatusCode, web::HttpResponse, ResponseError};
 use serde_json::json;
 
+mod catch_err;
+
+pub use catch_err::*;
+
 pub type Res<T> = std::result::Result<T, Error>;
-
-/// 业务上关心的、需要捕猎的错误。
-#[derive(Debug)]
-pub enum CatchErr {
-	/// 数据库重复。
-	DB_Duplicate,
-}
-
-impl std::fmt::Display for CatchErr {
-	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		write!(f, "数据重复。")
-	}
-}
 
 /// 业务错误类型。
 #[derive(Debug)]
@@ -63,5 +54,44 @@ impl ResponseError for Error {
 		let json = json!({ "msg": msg });
 
 		HttpResponse::build(code).json(json)
+	}
+}
+
+/// 可以快速抛出对错误。
+///
+/// 这在对写业务速度的提升可不就是一点儿半点儿啦！
+pub trait Throwable<T> {
+	fn bad_request<S: Into<String>>(self, msg: S) -> Res<T>;
+
+	fn catch_with(self, err: CatchErr) -> Res<T>;
+
+	fn throw_msg<S: Into<String>>(self, msg: S) -> Res<T>;
+}
+
+impl<T, E> Throwable<T> for std::result::Result<T, E> {
+	fn bad_request<S: Into<String>>(self, msg: S) -> Res<T> {
+		self.map_err(|_| Error::BadRequestE(msg.into()))
+	}
+
+	fn catch_with(self, err: CatchErr) -> Res<T> {
+		self.map_err(|_| Error::CatchE(err))
+	}
+
+	fn throw_msg<S: Into<String>>(self, msg: S) -> Res<T> {
+		self.map_err(|_| Error::ServerE(msg.into()))
+	}
+}
+
+impl<T> Throwable<T> for Option<T> {
+	fn bad_request<S: Into<String>>(self, msg: S) -> Res<T> {
+		self.ok_or(Error::BadRequestE(msg.into()))
+	}
+
+	fn catch_with(self, err: CatchErr) -> Res<T> {
+		self.ok_or(Error::CatchE(err))
+	}
+
+	fn throw_msg<S: Into<String>>(self, msg: S) -> Res<T> {
+		self.ok_or(Error::ServerE(msg.into()))
 	}
 }

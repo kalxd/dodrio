@@ -19,7 +19,7 @@ impl DB {
 		let client = self.get().await?;
 		client.query(statement, params).await.map_err(|e| {
 			if e.code() == Some(&SqlState::UNIQUE_VIOLATION) {
-				return Error::CatchE(CatchErr::DB_Duplicate);
+				return Error::CatchE(CatchErr::DBDuplicate);
 			} else {
 				return e.into();
 			}
