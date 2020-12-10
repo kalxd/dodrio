@@ -5,12 +5,14 @@ use deadpool_postgres::{Manager, ManagerConfig, Pool, RecyclingMethod};
 use tokio_postgres::{Config, NoTls};
 
 use crate::config::ServerConf;
-use crate::helper::DB;
+use crate::helper::{db::DB, user};
 
 #[derive(Clone)]
 pub struct State {
 	/// 数据库连接池。
 	pub db: DB,
+	/// 用户相关数据操作。
+	pub user: user::State,
 }
 
 impl State {
@@ -28,9 +30,11 @@ impl State {
 			recycling_method: RecyclingMethod::Fast,
 		};
 		let mgr = Manager::from_config(pg_cfg, NoTls, mgr_cfg);
-
 		let pool = Pool::new(mgr, 16);
 
-		Self { db: pool.into() }
+		let db = DB::from(pool);
+		let user = db.clone().into();
+
+		Self { db, user }
 	}
 }

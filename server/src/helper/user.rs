@@ -16,7 +16,7 @@ impl State {
 	pub async fn create_user(&self, account: &str, password: &str, username: Option<&str>, email: &str) -> Res<User> {
 		self.0
 			.query_one(
-				r#"insert into 用户 (账号, 密码, 用户名, 电子邮箱) values ($1, $2, md5($3), $4) returning *"#,
+				r#"insert into 用户 (账号, 密码, 用户名, 电子邮箱) values ($1, md5($2), $3, $4) returning *"#,
 				&[&account, &password, &username, &email],
 			)
 			.await

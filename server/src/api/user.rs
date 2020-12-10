@@ -1,7 +1,13 @@
-use actix_web::{post, web::Json, Scope};
+use actix_web::{
+	post,
+	web::{Data, Json},
+	Scope,
+};
+use dodrio_base::User;
 use serde::{Deserialize, Serialize};
 
 use crate::error::{Error, Res};
+use crate::state::State;
 
 #[derive(Deserialize, Serialize)]
 struct SignupBody {
@@ -13,12 +19,16 @@ struct SignupBody {
 }
 
 #[post("/signup")]
-async fn signup_api(body: Json<SignupBody>) -> Res<Json<SignupBody>> {
+async fn signup_api(body: Json<SignupBody>, state: Data<State>) -> Res<Json<User>> {
 	if body.password != body.repassword {
 		return Err(Error::BadRequestE("两次密码不一致。".into()));
 	}
 
-	Ok(body)
+	state
+		.user
+		.create_user(&body.account, &body.password, body.username.as_deref(), &body.email)
+		.await
+		.map(Json)
 }
 
 pub(super) fn build() -> Scope {

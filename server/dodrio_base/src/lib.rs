@@ -5,9 +5,9 @@ use tokio_postgres::row::Row;
 /// 可描述用户的最小单位。
 #[derive(Serialize)]
 pub struct User {
-	pub id: u32,
+	pub id: i32,
 	pub account: String,
-	pub username: String,
+	pub username: Option<String>,
 }
 
 impl From<Row> for User {
@@ -23,9 +23,9 @@ impl From<Row> for User {
 /// 看起来像用户、走起来像用户、听起来像用户，
 /// 那他就是用户。
 pub trait IsUser {
-	fn get_id(&self) -> &u32;
+	fn get_id(&self) -> &i32;
 	fn get_account(&self) -> &str;
-	fn get_username(&self) -> &str;
+	fn get_username(&self) -> Option<&String>;
 }
 
 impl<T> From<&T> for User
@@ -35,7 +35,7 @@ where
 	fn from(v: &T) -> Self {
 		let id = v.get_id().clone();
 		let account = v.get_account().into();
-		let username = v.get_username().into();
+		let username = v.get_username().map(Clone::clone);
 
 		Self { id, account, username }
 	}
