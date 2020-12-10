@@ -22,7 +22,7 @@ const config = {
 				use: [MiniCssExtraPlugin.loader, "css-loader"]
 			},
 			{
-				test: /\.(ttf|eot|woff(2)?|svg)(\?v=\d+\.\d+\.\d+)?$/,
+				test: /\.(ttf|eot|woff(2)?|svg|png)(\?v=\d+\.\d+\.\d+)?$/,
 				use: {
 					loader: "file-loader"
 				}

@@ -8,6 +8,7 @@
 		"@babel/preset-react": "^7.12.7",
 		"@babel/preset-typescript": "^7.12.7",
 		"@types/react": "^16.14.2",
+		"@types/react-dom": "^17.0.0",
 		"@types/react-router-dom": "^5.1.6",
 		"babel-loader": "^8.2.2",
 		"css-loader": "^5.0.1",
@@ -20,7 +21,8 @@
 		"webpack-cli": "^4.2.0"
 	},
 	"dependencies": {
-		"@blueprintjs/core": "^3.36.0",
+		"primeicons": "^4.1.0",
+		"primereact": "^5.0.2",
 		"react": "^16.14.0",
 		"react-dom": "^16.14.0",
 		"react-router-dom": "^5.2.0"
