@@ -5,7 +5,7 @@ import Typography from "@material-ui/core/Typography";
 
 export default function Nav() {
 	return (
-		<AppBar position="static">
+		<AppBar position="static" color="primary">
 			<ToolBar>
 				<Typography>hello world</Typography>
 			</ToolBar>

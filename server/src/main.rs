@@ -6,6 +6,7 @@ mod config;
 mod error;
 mod helper;
 mod state;
+mod t;
 
 #[actix_web::main]
 async fn main() -> Result<()> {
