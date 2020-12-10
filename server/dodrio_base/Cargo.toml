@@ -11,4 +11,4 @@ version = "1.0.118"
 features = ["derive"]
 
 [dependencies]
-tokio-postgres = "0.6.0"
+tokio-postgres = "0.5.5"
