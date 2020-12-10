@@ -4,6 +4,7 @@ let config
     : Config
     = { host = "127.0.0.1"
       , port = 3000
+      , salt = "salt"
       , db =
         { host = "127.0.0.1"
         , port = 5432

@@ -3,6 +3,6 @@ let DB = ./DB.dhall
 
 let Config
     : Type
-    = { host : Text, port : Natural, db : DB }
+    = { host : Text, port : Natural, db : DB, salt : Text }
 
 in  Config

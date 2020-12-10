@@ -7,7 +7,7 @@ use serde::Deserialize;
 use serde_dhall;
 
 /// 数据库配置。
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct DBConf {
 	pub host: IpAddr,
 	pub port: u16,
@@ -17,11 +17,12 @@ pub struct DBConf {
 }
 
 /// 配置选项。
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Clone)]
 pub struct ServerConf {
 	port: u16,
 	host: IpAddr,
 	pub db: DBConf,
+	pub salt: String,
 }
 
 impl ServerConf {

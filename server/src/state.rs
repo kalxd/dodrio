@@ -4,11 +4,15 @@
 use deadpool_postgres::{Manager, ManagerConfig, Pool, RecyclingMethod};
 use tokio_postgres::{Config, NoTls};
 
+use std::sync::Arc;
+
 use crate::config::ServerConf;
 use crate::helper::{db::DB, user};
 
 #[derive(Clone)]
 pub struct State {
+	/// 网站配置，保留下来，万一日后有用呢？
+	pub conf: Arc<ServerConf>,
 	/// 数据库连接池。
 	pub db: DB,
 	/// 用户相关数据操作。
@@ -35,6 +39,10 @@ impl State {
 		let db = DB::from(pool);
 		let user = db.clone().into();
 
-		Self { db, user }
+		Self {
+			db,
+			user,
+			conf: Arc::new(config.clone()),
+		}
 	}
 }

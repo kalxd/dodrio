@@ -23,6 +23,7 @@ impl DB {
 		})
 	}
 
+	/*
 	pub async fn query<T, R>(&'_ self, statement: &'_ T, params: &'_ [&'_ (dyn ToSql + '_ + Sync)]) -> Res<Vec<R>>
 	where
 		T: ToStatement + ?Sized,
@@ -37,6 +38,7 @@ impl DB {
 
 		Ok(r)
 	}
+	 */
 
 	pub async fn query_one<T, R>(
 		&'_ self,
@@ -52,6 +54,7 @@ impl DB {
 		Ok(rows.pop().map(Into::into))
 	}
 
+	/*
 	/// 仅用于单值的查询，例如查询用户是否存在。
 	///
 	/// ```
@@ -61,6 +64,7 @@ impl DB {
 	///     println!("不存在！");
 	/// }
 	/// ```
+
 	pub async fn query_b<T>(&'_ self, statement: &'_ T, params: &'_ [&'_ (dyn ToSql + '_ + Sync)]) -> Res<bool>
 	where
 		T: ToStatement + ?Sized,
@@ -70,6 +74,7 @@ impl DB {
 		let r = rows.pop().map(|row| row.get(0)).unwrap_or(false);
 		Ok(r)
 	}
+	 */
 }
 
 impl From<Pool> for DB {
