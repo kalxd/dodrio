@@ -95,3 +95,25 @@ impl<T> Throwable<T> for Option<T> {
 		self.ok_or(Error::ServerE(msg.into()))
 	}
 }
+
+/// 快速抛出错误的宏。
+///
+/// 该宏一定返回`Err`。
+///
+/// # 例子
+/// ```rust
+/// bad_request!(is_not_user, "用户不存在！");
+/// ```
+/// 当`is_not_user`为true时，抛出错误；为false时，继续往下执行。
+#[macro_export]
+macro_rules! bad_request {
+	($b:expr, $msg:literal) => {
+		if $b {
+			bad_request!($msg);
+			}
+	};
+
+	($msg:literal) => {
+		return Err(Error::BadRequestE($msg.into()));
+	};
+}

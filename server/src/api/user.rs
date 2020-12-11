@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 
 use std::convert::TryInto;
 
+use crate::bad_request;
 use crate::error::{Error, Res};
 use crate::state::State;
 use crate::t::SaveForUser;
@@ -25,9 +26,7 @@ impl<'a> TryInto<SaveForUser<'a>> for &'a (&'a str, &'a SignupBody) {
 	type Error = Error;
 
 	fn try_into(self) -> Result<SaveForUser<'a>, Self::Error> {
-		if self.1.password != self.1.repassword {
-			return Err(Error::BadRequestE("两次密码不一致。".into()));
-		}
+		bad_request!(self.1.password != self.1.repassword, "两次密码不一致");
 
 		Ok(SaveForUser::new(
 			&self.1.account,
