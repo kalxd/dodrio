@@ -3,21 +3,84 @@
  */
 import React from "react";
 import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
-import Divider from "@material-ui/core/Divider";
+import Container from "@material-ui/core/Container";
+import TextField from "@material-ui/core/TextField";
+import Button from "@material-ui/core/Button";
+import { Theme, makeStyles } from "@material-ui/core/styles";
+
+const useStyle = makeStyles((theme: Theme) => ({
+	root: {
+		marginTop: theme.spacing(2)
+	},
+	text: {
+		textAlign: "center"
+	}
+}));
 
 export default function Signup() {
-	return (
-		<Paper elevation={3}>
-			<Typography variant="h3">注册新用户</Typography>
-			<Divider />
+	const klass = useStyle();
 
-			<Grid>
-				<Grid item>
-					<h1>hello world</h1>
+	return (
+		<Container maxWidth="sm" className={klass.root}>
+			<Grid container spacing={2}>
+				<Grid item xs={12} className={klass.text}>
+					<Typography variant="h5">注册新用户</Typography>
+				</Grid>
+				<Grid item xs={12}>
+					<TextField
+						label="账号"
+						variant="outlined"
+						size="small"
+						autoFocus
+						placeholder="登录用途的账号。"
+						required
+						fullWidth />
+				</Grid>
+				<Grid item xs={12}>
+					<TextField
+						label="电子邮箱"
+						variant="outlined"
+						size="small"
+						placeholder="预留电子邮箱，仅仅作为找回密码的凭证。。"
+						required
+						fullWidth />
+				</Grid>
+				<Grid item xs={6}>
+					<TextField
+						label="密码"
+						variant="outlined"
+						placeholder="登录使用的密码。"
+						type="password"
+						required
+						size="small"
+						fullWidth />
+				</Grid>
+				<Grid item xs={6}>
+					<TextField
+						label="确认密码"
+						variant="outlined"
+						placeholder="确认要使用的密码，防止手误使用错误密码。"
+						size="small"
+						type="password"
+						required
+						fullWidth
+					/>
+				</Grid>
+				<Grid item xs={12}>
+					<TextField
+						label="用户名"
+						variant="outlined"
+						placeholder="网站上显示的用户名，与账号不相同。"
+						size="small"
+						fullWidth
+					/>
+				</Grid>
+
+				<Grid item xs={12}>
+					<Button variant="contained" color="primary" fullWidth>登录</Button>
 				</Grid>
 			</Grid>
-		</Paper>
+		</Container>
 	);
 }
