@@ -14,7 +14,7 @@ pub struct SessionUser {
 	pub sid: String,
 	pub id: i32,
 	pub account: String,
-	// pub username: Option<String>,
+	pub username: Option<String>,
 }
 
 impl TryFrom<Row> for SessionUser {
@@ -22,15 +22,15 @@ impl TryFrom<Row> for SessionUser {
 
 	fn try_from(row: Row) -> Result<Self, Self::Error> {
 		let sid = row.try_get("sid")?;
-		let id = row.try_get("id")?;
+		let id = row.try_get(1)?;
 		let account = row.try_get("账号")?;
-		// let username = row.try_get("用户名")?;
+		let username = row.try_get("用户名")?;
 
 		Ok(Self {
 			sid,
 			id,
 			account,
-			// username,
+			username,
 		})
 	}
 }

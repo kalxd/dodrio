@@ -46,8 +46,8 @@ async fn signup_api(body: Json<SignupBody>, state: Data<State>) -> Res<Json<User
 }
 
 #[get("/test")]
-async fn test(user: SessionUser) -> String {
-	user.account.into()
+async fn test(user: Option<SessionUser>) -> String {
+	user.map(|s| s.sid).unwrap_or("hello".into())
 }
 
 pub(super) fn build() -> Scope {
