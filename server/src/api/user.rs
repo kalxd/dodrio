@@ -6,6 +6,8 @@ use actix_web::{
 use dodrio_base::User;
 use serde::{Deserialize, Serialize};
 
+use std::convert::TryInto;
+
 use crate::error::{Error, Res};
 use crate::state::State;
 use crate::t::SaveForUser;
@@ -19,21 +21,29 @@ struct SignupBody {
 	email: String,
 }
 
+impl<'a> TryInto<SaveForUser<'a>> for &'a (&'a str, &'a SignupBody) {
+	type Error = Error;
+
+	fn try_into(self) -> Result<SaveForUser<'a>, Self::Error> {
+		if self.1.password != self.1.repassword {
+			return Err(Error::BadRequestE("两次密码不一致。".into()));
+		}
+
+		Ok(SaveForUser::new(
+			&self.1.account,
+			&self.1.password,
+			&self.1.username,
+			&self.1.email,
+			&self.0,
+		))
+	}
+}
+
 #[post("/signup")]
 async fn signup_api(body: Json<SignupBody>, state: Data<State>) -> Res<Json<User>> {
-	if body.password != body.repassword {
-		return Err(Error::BadRequestE("两次密码不一致。".into()));
-	}
-
-	let save_data = SaveForUser::new(
-		&body.account,
-		&body.password,
-		&body.username,
-		&body.email,
-		&state.conf.salt,
-	);
-
-	state.user.create_user(save_data).await.map(Json)
+	let input: (&str, &SignupBody) = (state.conf.salt.as_ref(), &*body);
+	let save_data: SaveForUser = TryInto::try_into(&input)?;
+	state.user.create_user(&save_data).await.map(Json)
 }
 
 pub(super) fn build() -> Scope {

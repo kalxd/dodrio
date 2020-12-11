@@ -14,7 +14,7 @@ impl From<DB> for State {
 }
 
 impl State {
-	pub async fn create_user(&self, data: SaveForUser<'_>) -> Res<User> {
+	pub async fn create_user(&self, data: &SaveForUser<'_>) -> Res<User> {
 		self.0
 			.query_one(
 				r#"insert into 用户 (账号, 密码, 用户名, 电子邮箱) values ($1, md5($2 || $5), $3, $4) returning *"#,
