@@ -8,7 +8,7 @@ use crate::error::{Error, Throwable};
 
 pub mod mics;
 
-const TOKEN_KEY: &'static str = "DodrioToken";
+const TOKEN_KEY: &'static str = "DODRIO-TOKEN";
 
 pub struct SessionUser {
 	pub sid: String,
