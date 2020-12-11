@@ -1,5 +1,5 @@
 use actix_web::{
-	post,
+	get, post,
 	web::{Data, Json},
 	Scope,
 };
@@ -11,7 +11,7 @@ use std::convert::TryInto;
 use crate::bad_request;
 use crate::error::{Error, Res};
 use crate::state::State;
-use crate::t::SaveForUser;
+use crate::t::{mics::SaveForUser, SessionUser};
 
 #[derive(Deserialize, Serialize)]
 struct SignupBody {
@@ -45,6 +45,11 @@ async fn signup_api(body: Json<SignupBody>, state: Data<State>) -> Res<Json<User
 	state.user.create_user(&save_data).await.map(Json)
 }
 
+#[get("/test")]
+async fn test(user: SessionUser) -> String {
+	user.account.into()
+}
+
 pub(super) fn build() -> Scope {
-	Scope::new("/user").service(signup_api)
+	Scope::new("/user").service(signup_api).service(test)
 }

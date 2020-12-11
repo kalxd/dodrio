@@ -2051,6 +2051,7 @@ dependencies = [
  "deadpool-postgres",
  "dodrio_base",
  "dodrio_derive",
+ "futures",
  "serde",
  "serde_dhall",
  "serde_json",

@@ -29,7 +29,7 @@ impl TryFrom<Row> for User {
 pub trait IsUser {
 	fn get_id(&self) -> &i32;
 	fn get_account(&self) -> &str;
-	fn get_username(&self) -> Option<&String>;
+	fn get_username(&self) -> &Option<String>;
 }
 
 impl<T> From<&T> for User
@@ -39,7 +39,7 @@ where
 	fn from(v: &T) -> Self {
 		let id = v.get_id().clone();
 		let account = v.get_account().into();
-		let username = v.get_username().map(Clone::clone);
+		let username = v.get_username().clone();
 
 		Self { id, account, username }
 	}

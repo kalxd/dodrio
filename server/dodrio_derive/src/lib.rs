@@ -20,8 +20,8 @@ pub fn is_user_derive(input: TokenStream) -> TokenStream {
 				&self.account
 			}
 
-			fn get_username(&self) -> Option<&String> {
-				self.username.as_ref()
+			fn get_username(&self) -> &Option<String> {
+				&self.username
 			}
 		}
 	};
