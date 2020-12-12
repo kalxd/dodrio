@@ -86,10 +86,7 @@ export default function Signup() {
 					<Button variant="contained" color="primary" fullWidth>注册</Button>
 				</Grid>
 
-				<Grid item xs={6}>
-					忘记密码？重新设置新密码。
-				</Grid>
-				<Grid item xs={6} className={klass.right}>
+				<Grid item xs={12} className={klass.right}>
 					已有账号？
 					<Link component={RouterLink} to="/signin">
 						马上登录！

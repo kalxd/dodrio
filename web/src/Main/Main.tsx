@@ -5,6 +5,7 @@ import Container from "@material-ui/core/Container";
 import Nav from "./Nav";
 
 import Signup from "./Page/Signup";
+import Signin from "./Page/Signin";
 
 export default function Main() {
 	return (
@@ -14,6 +15,9 @@ export default function Main() {
 			<Container>
 				<Route path="/signup">
 					<Signup />
+				</Route>
+				<Route path="/signin">
+					<Signin />
 				</Route>
 			</Container>
 		</>
