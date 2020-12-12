@@ -1,8 +1,4 @@
-const sleep = async (duration: number) => {
-	return new Promise(resolve => {
-		setTimeout(resolve, duration);
-	});
-};
+import { sleep } from "./Util";
 
 /**
  * 互斥锁的简易实现，用于单例状态的修改、更新。
