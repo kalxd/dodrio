@@ -1,6 +1,6 @@
 use actix_web::{dev::Payload, web, FromRequest, HttpRequest};
 use chrono::{offset::Local, DateTime};
-use dodrio_derive::IsUser;
+use dodrio_derive::LikeUser;
 use futures::future::{FutureExt, LocalBoxFuture};
 use serde::Serialize;
 use tokio_postgres::{error::Error as PGError, row::Row};
@@ -65,7 +65,7 @@ impl FromRequest for SessionUser {
 /// 已登录用户的详细信息。
 ///
 /// 忽略一些没用的信息。
-#[derive(Serialize, IsUser)]
+#[derive(Serialize, LikeUser)]
 pub struct Me {
 	pub id: i32,
 	#[serde(rename = "账号")]

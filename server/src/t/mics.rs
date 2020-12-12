@@ -51,12 +51,6 @@ impl TryFrom<Row> for SessionSid {
 	}
 }
 
-impl SessionSid {
-	fn as_(&self) -> &str {
-		self.0.as_str()
-	}
-}
-
 /// 连带sid一同返回的数组结构。
 ///
 /// 取消以往在响应头塞各种没道理数据的陋习。

@@ -3,7 +3,6 @@ use actix_web::{
 	web::{Data, Json},
 	Scope,
 };
-use dodrio_base::User;
 use serde::{Deserialize, Serialize};
 
 use std::convert::TryInto;
