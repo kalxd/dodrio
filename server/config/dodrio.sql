@@ -25,7 +25,8 @@ SET default_tablespace = '';
 CREATE TABLE public."会话" (
     sid text NOT NULL,
     "用户id" integer NOT NULL,
-    "创建日期" time with time zone DEFAULT now() NOT NULL
+    "创建日期" time with time zone DEFAULT now() NOT NULL,
+    "最近登录日期" timestamp(0) with time zone DEFAULT now()
 );
 
 
@@ -81,6 +82,14 @@ ALTER TABLE ONLY public."会话"
 
 
 --
+-- Name: 会话 会话_用户id_un; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public."会话"
+    ADD CONSTRAINT "会话_用户id_un" UNIQUE ("用户id");
+
+
+--
 -- Name: 用户 用户_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -94,6 +103,13 @@ ALTER TABLE ONLY public."用户"
 
 ALTER TABLE ONLY public."用户"
     ADD CONSTRAINT "用户_账号_key" UNIQUE ("账号");
+
+
+--
+-- Name: 会话_用户id_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX "会话_用户id_idx" ON public."会话" USING btree ("用户id");
 
 
 --
