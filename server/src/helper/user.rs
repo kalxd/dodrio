@@ -48,19 +48,7 @@ impl State {
 		let user_account = user.get_account();
 
 		self.0
-			.query_one(
-				r#"
-insert into 会话
-(sid, 用户id)
-values
-(md5($1 || now()), $2)
-on conflict (用户id)
-do update set
-最近登录日期 = now()
-returning sid
-"#,
-				&[&user_account, &user_id],
-			)
+			.query_one(include_str!("../sql/user_login.sql"), &[&user_account, &user_id])
 			.await?
 			.throw_msg("session创建失败，用户无法登录。")
 	}
