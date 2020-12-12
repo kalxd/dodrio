@@ -1,20 +1,13 @@
 import React from 'react';
 import { BrowserRouter as Router, Route } from "react-router-dom";
-import Container from "@material-ui/core/Container";
 
-import Nav from "./Nav";
-
-import Signup from "./page/Signup";
+import Main from "./Main/Main";
 
 const App = (
 	<Router>
-		<Nav />
-
-		<Container>
-			<Route path="/signup">
-				<Signup />
-			</Route>
-		</Container>
+		<Route path="/">
+			<Main />
+		</Route>
 	</Router>
 );
 
