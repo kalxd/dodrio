@@ -1,5 +1,5 @@
 use actix_web::{
-	get, post,
+	post,
 	web::{Data, Json},
 	Scope,
 };
@@ -9,9 +9,9 @@ use serde::{Deserialize, Serialize};
 use std::convert::TryInto;
 
 use crate::bad_request;
-use crate::error::{Error, Res};
+use crate::error::{Error, Res, Throwable};
 use crate::state::State;
-use crate::t::{mics::SaveForUser, SessionUser};
+use crate::t::{mics::SaveForUser, Me};
 
 #[derive(Deserialize, Serialize)]
 struct SignupBody {
@@ -45,11 +45,22 @@ async fn signup_api(body: Json<SignupBody>, state: Data<State>) -> Res<Json<User
 	state.user.create_user(&save_data).await.map(Json)
 }
 
-#[get("/test")]
-async fn test(user: Option<SessionUser>) -> String {
-	user.map(|s| s.sid).unwrap_or("hello".into())
+#[derive(Deserialize)]
+struct SigninBody {
+	account: String,
+	password: String,
+}
+
+#[post("/signin")]
+async fn signin_api(body: Json<SigninBody>, state: Data<State>) -> Res<Json<Me>> {
+	state
+		.user
+		.auth(&body.account, &body.password, &state.conf.salt)
+		.await?
+		.bad_request("用户不存在")
+		.map(Json)
 }
 
 pub(super) fn build() -> Scope {
-	Scope::new("/user").service(signup_api).service(test)
+	Scope::new("/user").service(signup_api).service(signin_api)
 }

@@ -21,6 +21,10 @@ dodrio_derive = { path = "./dodrio_derive" }
 version = "0.5.5"
 features = ["with-chrono-0_4"]
 
+[dependencies.chrono]
+version = "0.4.19"
+features = ["default", "serde"]
+
 # [dependencies.sqlx]
 # version = "0.4.1"
 # features = ["runtime-tokio-rustls", "macros", "chrono"]

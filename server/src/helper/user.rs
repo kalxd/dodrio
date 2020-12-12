@@ -2,7 +2,7 @@ use super::db::DB;
 use dodrio_base::User;
 
 use crate::error::{Error, Res, Throwable};
-use crate::t::mics::SaveForUser;
+use crate::t::{mics::SaveForUser, Me};
 
 #[derive(Clone)]
 pub struct State(DB);
@@ -14,6 +14,7 @@ impl From<DB> for State {
 }
 
 impl State {
+	/// 创建新用户
 	pub async fn create_user(&self, data: &SaveForUser<'_>) -> Res<User> {
 		self.0
 			.query_one(
@@ -26,5 +27,15 @@ impl State {
 				_ => e,
 			})
 			.and_then(|user| user.throw_msg("用户不存在"))
+	}
+
+	/// 验证用户，并返回全部信息。
+	pub async fn auth(&self, account: &str, password: &str, salt: &str) -> Res<Option<Me>> {
+		self.0
+			.query_one(
+				r#"select * from 用户 where 账号 = $1 and 密码 = md5($2 || $3) limit 1"#,
+				&[&account, &password, &salt],
+			)
+			.await
 	}
 }
