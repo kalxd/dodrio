@@ -12,56 +12,6 @@ use crate::error::{Error, Throwable};
 pub mod mics;
 pub mod req;
 
-pub struct SessionUser {
-	pub sid: String,
-	pub id: i32,
-	pub account: String,
-	pub username: Option<String>,
-}
-
-impl TryFrom<Row> for SessionUser {
-	type Error = PGError;
-
-	fn try_from(row: Row) -> Result<Self, Self::Error> {
-		let sid = row.try_get("sid")?;
-		let id = row.try_get(1)?;
-		let account = row.try_get("账号")?;
-		let username = row.try_get("用户名")?;
-
-		Ok(Self {
-			sid,
-			id,
-			account,
-			username,
-		})
-	}
-}
-
-impl FromRequest for SessionUser {
-	type Error = Error;
-	type Future = LocalBoxFuture<'static, Result<Self, Self::Error>>;
-	type Config = ();
-
-	fn from_request(req: &HttpRequest, _: &mut Payload) -> Self::Future {
-		use crate::state::State;
-
-		let req = req.clone();
-
-		let fut = async move {
-			let token = req::ask_token(&req).throw_msg("请登录")?;
-			let state: &web::Data<State> = req.app_data().expect("get state failed");
-
-			state
-				.db
-				.query_one(include_str!("../sql/select_session_user.sql"), &[&token])
-				.await?
-				.throw_msg("未找到该登录信息")
-		};
-
-		fut.boxed_local()
-	}
-}
-
 /// 已登录用户的详细信息。
 ///
 /// 忽略一些没用的信息。
@@ -78,10 +28,10 @@ pub struct Me {
 	pub create_date: DateTime<Local>,
 }
 
-impl TryFrom<Row> for Me {
+impl<'a> TryFrom<&'a Row> for Me {
 	type Error = PGError;
 
-	fn try_from(row: Row) -> Result<Self, Self::Error> {
+	fn try_from(row: &'a Row) -> Result<Self, Self::Error> {
 		let id = row.try_get("id")?;
 		let account = row.try_get("账号")?;
 		let username = row.try_get("用户名")?;
@@ -95,5 +45,68 @@ impl TryFrom<Row> for Me {
 			email,
 			create_date,
 		})
+	}
+}
+
+impl TryFrom<Row> for Me {
+	type Error = PGError;
+
+	fn try_from(row: Row) -> Result<Self, Self::Error> {
+		Self::try_from(&row)
+	}
+}
+
+pub struct SessionUser {
+	pub sid: String,
+	pub user: Me,
+}
+
+impl<'a> TryFrom<&'a Row> for SessionUser {
+	type Error = PGError;
+
+	fn try_from(row: &'a Row) -> Result<Self, Self::Error> {
+		let sid = row.try_get("sid")?;
+		let user = Me::try_from(row)?;
+
+		Ok(Self { sid, user })
+	}
+}
+
+impl TryFrom<Row> for SessionUser {
+	type Error = PGError;
+
+	fn try_from(row: Row) -> Result<Self, Self::Error> {
+		Self::try_from(&row)
+	}
+}
+
+impl Into<Me> for SessionUser {
+	fn into(self) -> Me {
+		self.user
+	}
+}
+
+impl FromRequest for SessionUser {
+	type Error = Error;
+	type Future = LocalBoxFuture<'static, Result<Self, Self::Error>>;
+	type Config = ();
+
+	fn from_request(req: &HttpRequest, _: &mut Payload) -> Self::Future {
+		use crate::state::State;
+
+		let req = req.clone();
+
+		let fut = async move {
+			let token = req::ask_token(&req).unauth("请登录")?;
+			let state: &web::Data<State> = req.app_data().expect("get state failed");
+
+			state
+				.db
+				.query_one(include_str!("../sql/select_session_user.sql"), &[&token])
+				.await?
+				.unauth("请登录")
+		};
+
+		fut.boxed_local()
 	}
 }

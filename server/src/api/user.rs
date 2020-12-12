@@ -1,5 +1,5 @@
 use actix_web::{
-	post,
+	get, post,
 	web::{Data, Json},
 	Scope,
 };
@@ -12,7 +12,7 @@ use crate::error::{Error, Res, Throwable};
 use crate::state::State;
 use crate::t::{
 	mics::{SaveForUser, SessionWith},
-	Me,
+	Me, SessionUser,
 };
 
 #[derive(Deserialize, Serialize)]
@@ -71,6 +71,15 @@ async fn signin_api(body: Json<SigninBody>, state: Data<State>) -> Res<Json<Sess
 	Ok(Json(session))
 }
 
+#[get("/me")]
+async fn me_api(session: Option<SessionUser>) -> Json<Option<Me>> {
+	let me = session.map(Into::into);
+	Json(me)
+}
+
 pub(super) fn build() -> Scope {
-	Scope::new("/user").service(signup_api).service(signin_api)
+	Scope::new("/user")
+		.service(signup_api)
+		.service(signin_api)
+		.service(me_api)
 }

@@ -13,6 +13,8 @@ pub type Res<T> = std::result::Result<T, Error>;
 pub enum Error {
 	// 400错误
 	BadRequestE(String),
+	// 401
+	UnauthE(String),
 	CatchE(CatchErr),
 	/// 内部服务错误。
 	ServerE(String),
@@ -32,11 +34,12 @@ impl std::fmt::Display for Error {
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
 		let msg = match self {
 			Self::BadRequestE(msg) => msg,
+			Self::UnauthE(msg) => msg,
 			Self::CatchE(_) => "重复操作",
 			Self::ServerE(msg) => msg,
 		};
 
-		write!(f, "内部错误：{}", msg)
+		write!(f, "{}", msg)
 	}
 }
 
@@ -44,6 +47,7 @@ impl ResponseError for Error {
 	fn status_code(&self) -> StatusCode {
 		match self {
 			Self::BadRequestE(_) => StatusCode::BAD_REQUEST,
+			Self::UnauthE(_) => StatusCode::UNAUTHORIZED,
 			_ => StatusCode::INTERNAL_SERVER_ERROR,
 		}
 	}
@@ -63,6 +67,8 @@ impl ResponseError for Error {
 pub trait Throwable<T> {
 	fn bad_request<S: Into<String>>(self, msg: S) -> Res<T>;
 
+	fn unauth<S: Into<String>>(self, msg: S) -> Res<T>;
+
 	fn catch_with(self, err: CatchErr) -> Res<T>;
 
 	fn throw_msg<S: Into<String>>(self, msg: S) -> Res<T>;
@@ -71,6 +77,10 @@ pub trait Throwable<T> {
 impl<T, E> Throwable<T> for std::result::Result<T, E> {
 	fn bad_request<S: Into<String>>(self, msg: S) -> Res<T> {
 		self.map_err(|_| Error::BadRequestE(msg.into()))
+	}
+
+	fn unauth<S: Into<String>>(self, msg: S) -> Res<T> {
+		self.map_err(|_| Error::UnauthE(msg.into()))
 	}
 
 	fn catch_with(self, err: CatchErr) -> Res<T> {
@@ -85,6 +95,10 @@ impl<T, E> Throwable<T> for std::result::Result<T, E> {
 impl<T> Throwable<T> for Option<T> {
 	fn bad_request<S: Into<String>>(self, msg: S) -> Res<T> {
 		self.ok_or(Error::BadRequestE(msg.into()))
+	}
+
+	fn unauth<S: Into<String>>(self, msg: S) -> Res<T> {
+		self.ok_or(Error::UnauthE(msg.into()))
 	}
 
 	fn catch_with(self, err: CatchErr) -> Res<T> {
@@ -115,5 +129,19 @@ macro_rules! bad_request {
 
 	($msg:literal) => {
 		return Err(Error::BadRequestE($msg.into()));
+	};
+}
+
+/// 快速抛出401错误。
+#[macro_export]
+macro_rules! unauth {
+	($b:expr, $msg:literal) => {
+		if $b {
+			unauth!($msg);
+			}
+	};
+
+	($msg:literal) => {
+		return Err(Error::UnauthE($msg.into()));
 	};
 }
