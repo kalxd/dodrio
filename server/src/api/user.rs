@@ -11,7 +11,10 @@ use std::convert::TryInto;
 use crate::bad_request;
 use crate::error::{Error, Res, Throwable};
 use crate::state::State;
-use crate::t::{mics::SaveForUser, Me};
+use crate::t::{
+	mics::{SaveForUser, SessionWith},
+	Me,
+};
 
 #[derive(Deserialize, Serialize)]
 struct SignupBody {
@@ -39,10 +42,14 @@ impl<'a> TryInto<SaveForUser<'a>> for &'a (&'a str, &'a SignupBody) {
 }
 
 #[post("/signup")]
-async fn signup_api(body: Json<SignupBody>, state: Data<State>) -> Res<Json<User>> {
+async fn signup_api(body: Json<SignupBody>, state: Data<State>) -> Res<Json<SessionWith<Me>>> {
 	let input: (&str, &SignupBody) = (state.conf.salt.as_ref(), &*body);
 	let save_data: SaveForUser = TryInto::try_into(&input)?;
-	state.user.create_user(&save_data).await.map(Json)
+	let me = state.user.create_user(&save_data).await?;
+	let sid = state.user.login(&me).await?;
+
+	let session = SessionWith { data: me, sid };
+	Ok(Json(session))
 }
 
 #[derive(Deserialize)]
@@ -52,7 +59,7 @@ struct SigninBody {
 }
 
 #[post("/signin")]
-async fn signin_api(body: Json<SigninBody>, state: Data<State>) -> Res<Json<(Me, String)>> {
+async fn signin_api(body: Json<SigninBody>, state: Data<State>) -> Res<Json<SessionWith<Me>>> {
 	let me = state
 		.user
 		.auth(&body.account, &body.password, &state.conf.salt)
@@ -60,7 +67,9 @@ async fn signin_api(body: Json<SigninBody>, state: Data<State>) -> Res<Json<(Me,
 		.bad_request("用户不存在")?;
 	let sid = state.user.login(&me).await?;
 
-	Ok(Json((me, sid.as_ref().to_string())))
+	let session = SessionWith { data: me, sid };
+
+	Ok(Json(session))
 }
 
 pub(super) fn build() -> Scope {

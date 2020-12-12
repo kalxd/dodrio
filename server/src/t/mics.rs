@@ -1,4 +1,5 @@
 //! 必要、常用类型定义
+use serde::Serialize;
 use tokio_postgres::{error::Error as PGError, row::Row};
 
 use std::convert::TryFrom;
@@ -37,6 +38,7 @@ impl<'a> SaveForUser<'a> {
 }
 
 /// 单独的sid。估计仅在一处用到。
+#[derive(Serialize)]
 pub struct SessionSid(pub String);
 
 impl TryFrom<Row> for SessionSid {
@@ -49,8 +51,17 @@ impl TryFrom<Row> for SessionSid {
 	}
 }
 
-impl AsRef<str> for SessionSid {
-	fn as_ref(&self) -> &str {
+impl SessionSid {
+	fn as_(&self) -> &str {
 		self.0.as_str()
 	}
+}
+
+/// 连带sid一同返回的数组结构。
+///
+/// 取消以往在响应头塞各种没道理数据的陋习。
+#[derive(Serialize)]
+pub struct SessionWith<T> {
+	pub sid: SessionSid,
+	pub data: T,
 }

@@ -1,5 +1,5 @@
 use super::db::DB;
-use dodrio_base::{IsUser, User};
+use dodrio_base::IsUser;
 
 use crate::error::{Error, Res, Throwable};
 use crate::t::{
@@ -18,7 +18,7 @@ impl From<DB> for State {
 
 impl State {
 	/// 创建新用户
-	pub async fn create_user(&self, data: &SaveForUser<'_>) -> Res<User> {
+	pub async fn create_user(&self, data: &SaveForUser<'_>) -> Res<Me> {
 		self.0
 			.query_one(
 				r#"insert into 用户 (账号, 密码, 用户名, 电子邮箱) values ($1, md5($2 || $5), $3, $4) returning *"#,
@@ -28,8 +28,8 @@ impl State {
 			.map_err(|e| match e {
 				Error::CatchE(_) => Error::BadRequestE("该账号已被注册。".into()),
 				_ => e,
-			})
-			.and_then(|user| user.throw_msg("用户不存在"))
+			})?
+			.throw_msg("注册用户失败")
 	}
 
 	/// 验证用户，并返回全部信息。
@@ -54,9 +54,9 @@ insert into 会话
 (sid, 用户id)
 values
 (md5($1 || now()), $2)
-on conflict
-do update
-set 最近登录日期 = now()
+on conflict (用户id)
+do update set
+最近登录日期 = now()
 returning sid
 "#,
 				&[&user_account, &user_id],
