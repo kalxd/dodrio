@@ -52,13 +52,15 @@ struct SigninBody {
 }
 
 #[post("/signin")]
-async fn signin_api(body: Json<SigninBody>, state: Data<State>) -> Res<Json<Me>> {
-	state
+async fn signin_api(body: Json<SigninBody>, state: Data<State>) -> Res<Json<(Me, String)>> {
+	let me = state
 		.user
 		.auth(&body.account, &body.password, &state.conf.salt)
 		.await?
-		.bad_request("用户不存在")
-		.map(Json)
+		.bad_request("用户不存在")?;
+	let sid = state.user.login(&me).await?;
+
+	Ok(Json((me, sid.as_ref().to_string())))
 }
 
 pub(super) fn build() -> Scope {

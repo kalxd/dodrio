@@ -1,8 +1,11 @@
 use super::db::DB;
-use dodrio_base::User;
+use dodrio_base::{IsUser, User};
 
 use crate::error::{Error, Res, Throwable};
-use crate::t::{mics::SaveForUser, Me};
+use crate::t::{
+	mics::{SaveForUser, SessionSid},
+	Me,
+};
 
 #[derive(Clone)]
 pub struct State(DB);
@@ -37,5 +40,28 @@ impl State {
 				&[&account, &password, &salt],
 			)
 			.await
+	}
+
+	/// 用户尝试登录，并将信息写入“会话”。
+	pub async fn login<T: IsUser>(&self, user: &T) -> Res<SessionSid> {
+		let user_id = user.get_id();
+		let user_account = user.get_account();
+
+		self.0
+			.query_one(
+				r#"
+insert into 会话
+(sid, 用户id)
+values
+(md5($1 || now()), $2)
+on conflict
+do update
+set 最近登录日期 = now()
+returning sid
+"#,
+				&[&user_account, &user_id],
+			)
+			.await?
+			.throw_msg("session创建失败，用户无法登录。")
 	}
 }

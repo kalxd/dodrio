@@ -1,4 +1,7 @@
 //! 必要、常用类型定义
+use tokio_postgres::{error::Error as PGError, row::Row};
+
+use std::convert::TryFrom;
 use std::ops::Deref;
 
 /// 该函数用于创建新用户，详见[`crate::helper::user::State::create_user`]。
@@ -30,5 +33,24 @@ impl<'a> SaveForUser<'a> {
 			email: email.as_ref(),
 			salt: salt.as_ref(),
 		}
+	}
+}
+
+/// 单独的sid。估计仅在一处用到。
+pub struct SessionSid(pub String);
+
+impl TryFrom<Row> for SessionSid {
+	type Error = PGError;
+
+	fn try_from(row: Row) -> Result<Self, Self::Error> {
+		let sid = row.try_get(0)?;
+
+		Ok(Self(sid))
+	}
+}
+
+impl AsRef<str> for SessionSid {
+	fn as_ref(&self) -> &str {
+		self.0.as_str()
 	}
 }
