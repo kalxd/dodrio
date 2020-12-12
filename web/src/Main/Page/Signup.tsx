@@ -2,11 +2,13 @@
  * 注册页面
  */
 import React from "react";
+import { Link as RouterLink } from "react-router-dom";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
+import Link from "@material-ui/core/Link";
 import { Theme, makeStyles } from "@material-ui/core/styles";
 
 const useStyle = makeStyles((theme: Theme) => ({
@@ -15,6 +17,9 @@ const useStyle = makeStyles((theme: Theme) => ({
 	},
 	text: {
 		textAlign: "center"
+	},
+	right: {
+		textAlign: "right"
 	}
 }));
 
@@ -78,7 +83,17 @@ export default function Signup() {
 				</Grid>
 
 				<Grid item xs={12}>
-					<Button variant="contained" color="primary" fullWidth>登录</Button>
+					<Button variant="contained" color="primary" fullWidth>注册</Button>
+				</Grid>
+
+				<Grid item xs={6}>
+					忘记密码？重新设置新密码。
+				</Grid>
+				<Grid item xs={6} className={klass.right}>
+					已有账号？
+					<Link component={RouterLink} to="/signin">
+						马上登录！
+					</Link>
 				</Grid>
 			</Grid>
 		</Container>
