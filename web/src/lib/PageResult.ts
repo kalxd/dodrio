@@ -7,7 +7,7 @@ enum ST {
     LOADING,
     OK,
     ERR,
-}
+};
 
 /**
  * 最朴素的页面状态类型。
@@ -19,16 +19,14 @@ export default class PageResult<T> {
 	private inner: T | undefined;
 	private err: string | undefined;
 
-	constructor(data?: T) {
-		this.inner = data;
+	constructor() {
 		this.st = ST.LOADING;
-		this.err = undefined;
 	}
 
 	/**
 	 * 状态设为_成功_。
 	 */
-	set_ok(data: T): this {
+	setOk(data: T): this {
 		this.inner = data;
 		this.st = ST.OK;
 		this.err = undefined;
@@ -38,7 +36,7 @@ export default class PageResult<T> {
 	/**
 	 * 状态设为_处理中_。
 	 */
-	set_loading(): this {
+	setLoading(): this {
 		this.inner = undefined;
 		this.st = ST.LOADING;
 		this.err = undefined;
@@ -48,7 +46,7 @@ export default class PageResult<T> {
 	/**
 	 * 状态设为_失败_。
 	 */
-	set_err(err: string): this {
+	setErr(err: string): this {
 		this.inner = undefined;
 		this.st = ST.ERR;
 		this.err = err;
@@ -73,7 +71,7 @@ export default class PageResult<T> {
 	 * 渲染出错误。
 	 * @params f 一个普通的渲染函数。
 	 */
-	map_err(f: (err: string) => React.ReactNode): React.ReactNode {
+	mapErr(f: (err: string) => React.ReactNode): React.ReactNode {
 		if (this.st == ST.ERR) {
 			return f(this.err as string);
 		}
@@ -82,15 +80,15 @@ export default class PageResult<T> {
 		}
 	}
 
-	is_ok(): boolean {
+	isOk(): boolean {
 		return this.st == ST.OK;
 	}
 
-	is_loading(): boolean {
+	isLoading(): boolean {
 		return this.st == ST.LOADING;
 	}
 
-	is_err(): boolean {
+	isErr(): boolean {
 		return this.st == ST.ERR;
 	}
 }

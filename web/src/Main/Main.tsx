@@ -2,6 +2,7 @@ import React from "react";
 import { Route } from "react-router-dom";
 import Container from "@material-ui/core/Container";
 
+import MeProvider from "./Me";
 import Nav from "./Nav";
 
 import Signup from "./Page/Signup";
@@ -9,7 +10,7 @@ import Signin from "./Page/Signin";
 
 export default function Main() {
 	return (
-		<>
+		<MeProvider>
 			<Nav />
 
 			<Container>
@@ -20,6 +21,6 @@ export default function Main() {
 					<Signin />
 				</Route>
 			</Container>
-		</>
+		</MeProvider>
 	);
 }
