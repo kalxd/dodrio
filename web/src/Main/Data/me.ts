@@ -1,5 +1,6 @@
 import { createContext, Context } from "react";
 import PageResult from "../../lib/PageResult";
+import Option from "../../lib/Option";
 
 export interface MeType {
 	readonly id: number;
@@ -9,4 +10,5 @@ export interface MeType {
 	readonly 创建日期: Date;
 }
 
-export const MeContext: Context<PageResult<MeType>> = createContext(new PageResult());
+export const MeContext: Context<PageResult<Option<MeType>>>
+	= createContext(new PageResult());
