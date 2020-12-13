@@ -43,7 +43,7 @@ const config = {
 		new HtmlWebpackPlugin({
 			title: "",
 			hash: true,
-			template: "./webpack/template.html"
+			// template: "./webpack/template.html"
 		}),
 
 		new MiniCssExtraPlugin()

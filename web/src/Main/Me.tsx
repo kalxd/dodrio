@@ -7,15 +7,32 @@ interface PropType {
 	children: ReactChildren
 }
 
-// 全局锁。
-let isFreezen = false;
-console.log("do this?");
-
 export default function MeProvider({children}: PropType): ReactNode {
 	const [me, setMe] = useState(new PageResult<Option<MeType>>());
 
 	useEffect(() => {
-		console.log(isFreezen);
+		const inits = {
+			headers: {
+				"Context-Type": "application/json"
+			}
+		};
+		me.setLoading();
+		setMe(me);
+
+		fetch("/_/user/me", inits)
+			.then(r => r.json())
+			.then(res => {
+				console.log(res);
+				const user = new Option(res);
+				me.setOk(user);
+				console.log(me);
+				setMe(me);
+			})
+			.catch(e => {
+				me.setErr(e.message);
+				setMe(me);
+			});
+		;
 	}, []);
 
 	return (
