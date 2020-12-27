@@ -1,7 +1,7 @@
 import React, { useState, useEffect, ReactNode, ReactChildren } from "react";
 import PageResult from "../lib/PageResult";
 import Option from "../lib/Option";
-import { MeContext, MeType } from "./Data/Me";
+import { MeContext, MeType, MeValue } from "./Data/Me";
 
 interface PropType {
 	children: ReactChildren
@@ -35,8 +35,13 @@ export default function MeProvider({children}: PropType): ReactNode {
 		;
 	}, []);
 
+	const value: MeValue = {
+		me,
+		setMe
+	};
+
 	return (
-		<MeContext.Provider value={me}>
+		<MeContext.Provider value={value}>
 			{children}
 		</MeContext.Provider>
 	);

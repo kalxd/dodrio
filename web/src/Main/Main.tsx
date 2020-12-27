@@ -7,6 +7,7 @@ import Nav from "./Nav";
 
 import Signup from "./Page/Signup";
 import Signin from "./Page/Signin";
+import Sample from "./Sample";
 
 export default function Main() {
 	return (
@@ -14,6 +15,9 @@ export default function Main() {
 			<Nav />
 
 			<Container>
+				<Route path="/">
+					<Sample />
+				</Route>
 				<Route path="/signup">
 					<Signup />
 				</Route>
