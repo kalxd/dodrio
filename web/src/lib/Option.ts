@@ -6,7 +6,7 @@ import { ReactNode } from "react";
 export default class Option<T> {
 	private inner: T | undefined | null;
 
-	constructor(data?: T) {
+	constructor(data: T | undefined | null) {
 		this.inner = data;
 	}
 
