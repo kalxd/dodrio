@@ -17,7 +17,7 @@ export default class Option<T> {
 	 */
 	map<R>(f: (value: T) => R): Option<R> {
 		if (this.inner == undefined || this.inner == null) {
-			return new Option<R>();
+			return new Option<R>(null);
 		}
 		else {
 			return new Option(f(this.inner));
@@ -49,5 +49,13 @@ export default class Option<T> {
 		else {
 			return node;
 		}
+	}
+
+	/**
+	 * 直接拿到内部的值。
+	 * 该函数不像Rust的unwrap直接panic。
+	 */
+	unwrap(): T | null | undefined {
+		return this.inner;
 	}
 }

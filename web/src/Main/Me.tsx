@@ -1,7 +1,8 @@
 import React, { useState, useEffect, ReactNode, ReactChildren } from "react";
 import PageResult from "../lib/PageResult";
 import Option from "../lib/Option";
-import { MeContext, MeType, MeValue } from "./Data/Me";
+import { MeContext, MeType, MeValue, FetchF } from "./Data/Me";
+import { readToken } from "./Data/Session";
 
 interface PropType {
 	children: ReactChildren
@@ -9,20 +10,15 @@ interface PropType {
 
 export default function MeProvider({children}: PropType): ReactNode {
 	const [me, setMe] = useState(new PageResult<Option<MeType>>());
+	const token = readToken().unwrap();
+	const Fetch = new FetchF(token);
 
 	useEffect(() => {
-		const inits = {
-			headers: {
-				"Context-Type": "application/json"
-			}
-		};
 		me.setLoading();
 		setMe(me);
 
-		fetch("/_/user/me", inits)
-			.then(r => r.json())
+		Fetch.get<MeType>("/_/user/me")
 			.then(res => {
-				console.log(res);
 				const user = new Option(res);
 				me.setOk(user);
 				console.log(me);
@@ -37,7 +33,8 @@ export default function MeProvider({children}: PropType): ReactNode {
 
 	const value: MeValue = {
 		me,
-		setMe
+		setMe,
+		Fetch
 	};
 
 	return (
