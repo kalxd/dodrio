@@ -1,24 +1,32 @@
 import { useState, ChangeEvent, SetStateAction, Dispatch } from "react";
 
+type Callback = (e: ChangeEvent<HTMLInputElement>) => void;
+
 export default function useForm<T>(init: T): [
 	T,
-	{[I in keyof T]: ((e: ChangeEvent<HTMLInputElement>) => void)},
+	{[I in keyof T]: Callback},
 	Dispatch<SetStateAction<T>>]
 {
 	const [data, setData] = useState(init);
 
-	let m = {};
-	for (const a in init) {
-		const attr = a.replace(/^\w/, c => c.toUpperCase());
-		const method = `set${attr}`;
-		m[method] = (e: ChangeEvent<HTMLInputElement>) => {
-			const value = e.target.value.trim();
-			setData({
-				...data,
-				[a]: value
-			})
-		};
-	}
+	type U = { [I in keyof T]: Callback };
 
-	return [data, m, setData];
+	const setter: U =
+		Object.entries(init)
+			.reduce((acc, [key, _]) => {
+				const callback = (e: ChangeEvent<HTMLInputElement>) => {
+					const value = e.target.value.trim();
+					setData({
+						...data,
+						[key]: value
+					});
+				};
+
+				return Object.assign(acc, {
+					[key]: callback
+				});
+			}, {} as U)
+	;
+
+	return [data, setter, setData];
 }

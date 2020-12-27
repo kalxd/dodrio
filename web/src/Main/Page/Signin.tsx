@@ -29,13 +29,13 @@ export default function Signin() {
 	const klass = useStyle();
 	const { Fetch } = useContext(MeContext);
 
-	const [data, form] = useForm<FormType>({
+	const [form, setter] = useForm<FormType>({
 		account: "",
 		password: ""
 	});
 
 	const submitForm = () => {
-		Fetch.post<MeType, FormType>("/_/user/signin", data)
+		Fetch.post<MeType, FormType>("/_/user/signin", form)
 			.then(console.log)
 		;
 	};
@@ -53,8 +53,8 @@ export default function Signin() {
 						size="small"
 						autoFocus
 						placeholder="登录账号"
-						value={data.account}
-						onChange={form.setAccount}
+						value={form.account}
+						onChange={setter.account}
 						required
 						fullWidth
 					/>
@@ -67,8 +67,8 @@ export default function Signin() {
 						placeholder="你知我知的登录密码"
 						required
 						fullWidth
-						value={data.password}
-						onChange={form.setPassword}
+						value={form.password}
+						onChange={setter.password}
 					/>
 				</Grid>
 				<Grid item xs={12}>

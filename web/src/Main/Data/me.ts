@@ -13,6 +13,11 @@ export interface MeType {
 	readonly 创建日期: Date;
 }
 
+interface HeaderDef {
+	"Content-Type": string;
+	"DODRIO-TOKEN"?: string;
+}
+
 export class FetchF {
 	token: string | undefined;
 
@@ -20,8 +25,8 @@ export class FetchF {
 		this.token = token;
 	}
 
-	private fetch<T>(info: RequestInfo, inits: RequestInit): Promise<T> {
-		let headers = {
+	private async fetch<T>(info: RequestInfo, inits: RequestInit): Promise<T> {
+		let headers: HeaderDef = {
 			"Content-Type": "Application/json",
 		};
 
@@ -43,7 +48,7 @@ export class FetchF {
 		return this.fetch(info, init);
 	}
 
-	async post<T, B>(info: RequestInfo, body?: B) {
+	async post<B>(info: RequestInfo, body?: B) {
 		const init = {
 			method: "POST",
 			body: JSON.stringify(body)
@@ -52,7 +57,7 @@ export class FetchF {
 		return this.fetch(info, init);
 	}
 
-	async put<T, B>(info: RequestInfo, body?: B) {
+	async put<B>(info: RequestInfo, body?: B) {
 		const init = {
 			method: "GET",
 			body: JSON.stringify(body)
@@ -61,7 +66,7 @@ export class FetchF {
 		return this.fetch(info, init);
 	}
 
-	async del<T>(info: RequestInfo) {
+	async del(info: RequestInfo) {
 		const init = {
 			method: "DELETE"
 		};
