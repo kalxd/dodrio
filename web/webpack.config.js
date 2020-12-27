@@ -36,6 +36,7 @@ const config = {
 
 	output: {
 		filename: "main.js",
+		chunkFilename: "[id].chunk.js",
 		path: Path.resolve(".", "dist")
 	},
 
@@ -47,7 +48,13 @@ const config = {
 		}),
 
 		new MiniCssExtraPlugin()
-	]
+	],
+
+	optimization: {
+		splitChunks: {
+			chunks: "all"
+		}
+	}
 };
 
 module.exports = config;
