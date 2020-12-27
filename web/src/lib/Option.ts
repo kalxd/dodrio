@@ -4,9 +4,9 @@ import { ReactNode } from "react";
  * 万恶的空值。
  */
 export default class Option<T> {
-	private inner: T | undefined | null;
+	private inner: T | undefined;
 
-	constructor(data: T | undefined | null) {
+	constructor(data: T | undefined) {
 		this.inner = data;
 	}
 
@@ -17,7 +17,7 @@ export default class Option<T> {
 	 */
 	map<R>(f: (value: T) => R): Option<R> {
 		if (this.inner == undefined || this.inner == null) {
-			return new Option<R>(null);
+			return new Option<R>(undefined);
 		}
 		else {
 			return new Option(f(this.inner));
@@ -55,7 +55,7 @@ export default class Option<T> {
 	 * 直接拿到内部的值。
 	 * 该函数不像Rust的unwrap直接panic。
 	 */
-	unwrap(): T | null | undefined {
+	unwrap(): T | undefined {
 		return this.inner;
 	}
 }

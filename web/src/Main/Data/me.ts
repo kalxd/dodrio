@@ -21,12 +21,15 @@ export class FetchF {
 	}
 
 	private fetch<T>(info: RequestInfo, inits: RequestInit): Promise<T> {
-		let option = Object.assign({}, inits, {
-			headers: {
-				"Context-Type": "Application/json",
-				"DODRIO-TOKEN": this.token
-			}
-		});
+		let headers = {
+			"Content-Type": "Application/json",
+		};
+
+		if (this.token != undefined) {
+			headers["DODRIO-TOKEN"] = this.token;
+		}
+
+		let option = Object.assign({}, inits, { headers });
 
 		return fetch(info, option)
 			.then(r => r.json())
@@ -42,7 +45,7 @@ export class FetchF {
 
 	async post<T, B>(info: RequestInfo, body?: B) {
 		const init = {
-			method: "GET",
+			method: "POST",
 			body: JSON.stringify(body)
 		};
 

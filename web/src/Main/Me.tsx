@@ -21,7 +21,6 @@ export default function MeProvider({children}: PropType): ReactNode {
 			.then(res => {
 				const user = new Option(res);
 				me.setOk(user);
-				console.log(me);
 				setMe(me);
 			})
 			.catch(e => {
