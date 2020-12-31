@@ -25,9 +25,42 @@ SET default_tablespace = '';
 CREATE TABLE public."会话" (
     sid text NOT NULL,
     "用户id" integer NOT NULL,
-    "创建日期" time with time zone DEFAULT now() NOT NULL,
-    "最近登录日期" timestamp(0) with time zone DEFAULT now()
+    "最近登录日期" timestamp(0) with time zone DEFAULT now(),
+    "创建日期" timestamp(0) with time zone DEFAULT now() NOT NULL
 );
+
+
+--
+-- Name: 版块; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public."版块" (
+    id integer NOT NULL,
+    "名称" text NOT NULL,
+    "简介" text,
+    "可见" boolean DEFAULT true NOT NULL,
+    "创建日办" timestamp(0) with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: 版块_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public."版块_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: 版块_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public."版块_id_seq" OWNED BY public."版块".id;
 
 
 --
@@ -40,7 +73,7 @@ CREATE TABLE public."用户" (
     "密码" text NOT NULL,
     "用户名" character varying(32),
     "电子邮箱" character varying(32) NOT NULL,
-    "创建日期" time with time zone DEFAULT now() NOT NULL,
+    "创建日期" timestamp(0) with time zone DEFAULT now() NOT NULL,
     CONSTRAINT "用户_密码_check" CHECK ((length("密码") > 8)),
     CONSTRAINT "用户_电子邮箱_check" CHECK ((regexp_match(("电子邮箱")::text, '\w+@\w+'::text) IS NOT NULL))
 );
@@ -67,6 +100,13 @@ ALTER SEQUENCE public."用户_id_seq" OWNED BY public."用户".id;
 
 
 --
+-- Name: 版块 id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public."版块" ALTER COLUMN id SET DEFAULT nextval('public."版块_id_seq"'::regclass);
+
+
+--
 -- Name: 用户 id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -87,6 +127,14 @@ ALTER TABLE ONLY public."会话"
 
 ALTER TABLE ONLY public."会话"
     ADD CONSTRAINT "会话_用户id_un" UNIQUE ("用户id");
+
+
+--
+-- Name: 版块 版块_pk; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public."版块"
+    ADD CONSTRAINT "版块_pk" PRIMARY KEY (id);
 
 
 --
