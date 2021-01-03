@@ -4,16 +4,16 @@ const MiniCssExtraPlugin = require("mini-css-extract-plugin");
 
 const config = {
 	mode: "development",
-	entry: "./src/main.ts",
+	entry: "./src/main.js",
 	module: {
 		rules: [
 			{
-				test: /\.tsx?$/,
+				test: /\.jsx?$/,
 				exclude: /node_modules/,
 				use: {
 					loader: "babel-loader",
 					options: {
-						presets: ["@babel/preset-react", "@babel/preset-typescript"]
+						presets: ["@babel/preset-react"]
 					}
 				}
 			},
@@ -31,7 +31,7 @@ const config = {
 	},
 
 	resolve: {
-		extensions: [".ts", ".tsx", ".js"]
+		extensions: [".js", ".jsx"]
 	},
 
 	output: {
@@ -44,7 +44,6 @@ const config = {
 		new HtmlWebpackPlugin({
 			title: "",
 			hash: true,
-			// template: "./webpack/template.html"
 		}),
 
 		new MiniCssExtraPlugin()
