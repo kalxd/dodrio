@@ -17,7 +17,7 @@ async fn main() -> Result<()> {
 		App::new()
 			.data(state.clone())
 			.app_data(state.clone())
-			.service(api::build())
+			.service(api::api())
 	})
 	.bind(&config)?
 	.run()
