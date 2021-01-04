@@ -7,7 +7,7 @@ use tokio_postgres::{Config, NoTls};
 use std::sync::{Arc, Mutex};
 
 use crate::config::ServerConf;
-use crate::helper::{db::DB, user};
+use crate::helper::{admin, db::DB, user};
 use crate::t::SiteInfo;
 
 #[derive(Clone)]
@@ -20,6 +20,8 @@ pub struct State {
 	pub db: DB,
 	/// 用户相关数据操作。
 	pub user: user::State,
+	/// 后台相关数据操作。
+	pub admin: admin::State,
 }
 
 impl State {
@@ -41,11 +43,13 @@ impl State {
 
 		let db = DB::from(pool);
 		let user = db.clone().into();
+		let admin = db.clone().into();
 
 		Self {
 			db,
 			info: Arc::new(Mutex::new(SiteInfo::load())),
 			user,
+			admin,
 			conf: Arc::new(config.clone()),
 		}
 	}

@@ -137,9 +137,35 @@ impl SiteInfo {
 
 	/// 保存配置。
 	pub fn save(&self) -> std::io::Result<()> {
-		use std::fs::File;
+		use std::fs::OpenOptions;
 
-		let file = File::open(CONFIG_PATH)?;
+		let file = OpenOptions::new().write(true).create(true).open(CONFIG_PATH)?;
 		serde_json::to_writer(file, &self).map_err(|_| std::io::ErrorKind::InvalidData.into())
+	}
+}
+
+/// 管理员账号信息
+#[derive(Serialize)]
+pub struct AdminUser {
+	pub id: i32,
+	#[serde(rename = "用户名")]
+	pub username: String,
+	#[serde(rename = "创建日期")]
+	pub create_date: DateTime<Local>,
+}
+
+impl TryFrom<Row> for AdminUser {
+	type Error = PGError;
+
+	fn try_from(row: Row) -> Result<Self, Self::Error> {
+		let id = row.try_get("id")?;
+		let username = row.try_get("用户名")?;
+		let create_date = row.try_get("创建日期")?;
+
+		Ok(Self {
+			id,
+			username,
+			create_date,
+		})
 	}
 }
