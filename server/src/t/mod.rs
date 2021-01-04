@@ -1,8 +1,9 @@
+//! 基本、常用数据类型定义。
 use actix_web::{dev::Payload, web, FromRequest, HttpRequest};
 use chrono::{offset::Local, DateTime};
 use dodrio_derive::LikeUser;
 use futures::future::{FutureExt, LocalBoxFuture};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use tokio_postgres::{error::Error as PGError, row::Row};
 
 use std::convert::TryFrom;
@@ -108,5 +109,37 @@ impl FromRequest for SessionUser {
 		};
 
 		fut.boxed_local()
+	}
+}
+
+/// 网站配置信息。
+///
+/// 在网站初始、启动时都会读入内存，并能在运行时更改。
+#[derive(Deserialize, Serialize)]
+pub struct SiteInfo {
+	#[serde(rename = "标题")]
+	pub title: String,
+	#[serde(rename = "描述")]
+	pub desc: String,
+}
+
+const CONFIG_PATH: &'static str = "./config/.site.conf.json";
+
+impl SiteInfo {
+	/// 读取配置。
+	pub fn load() -> Option<Self> {
+		use std::fs::File;
+
+		let file = File::open(CONFIG_PATH).ok()?;
+		let info = serde_json::from_reader(file).ok()?;
+		Some(info)
+	}
+
+	/// 保存配置。
+	pub fn save(&self) -> std::io::Result<()> {
+		use std::fs::File;
+
+		let file = File::open(CONFIG_PATH)?;
+		serde_json::to_writer(file, &self).map_err(|_| std::io::ErrorKind::InvalidData.into())
 	}
 }
