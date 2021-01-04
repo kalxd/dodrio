@@ -1,6 +1,6 @@
 //! 后台管理API。
 use actix_web::{
-	get, post,
+	post,
 	web::{Data, Json},
 	Scope,
 };
@@ -12,11 +12,6 @@ use crate::bad_request;
 use crate::error::{Error, Res};
 use crate::state::State;
 use crate::t::{AdminUser, SiteInfo};
-
-#[get("/hello")]
-async fn index() -> &'static str {
-	"hello admin"
-}
 
 #[derive(Deserialize)]
 struct RegistBody {
@@ -60,5 +55,5 @@ async fn sigin_up() -> &'static str {
 }
 
 pub(super) fn api() -> Scope {
-	Scope::new("/admin").service(index).service(regist).service(sigin_up)
+	Scope::new("/admin").service(regist).service(sigin_up)
 }

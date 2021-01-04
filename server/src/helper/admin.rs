@@ -1,6 +1,6 @@
 //! 后台业务模块。
 use super::db::DB;
-use crate::error::{Res, Throwable};
+use crate::error::{Error, Res, Throwable};
 use crate::t::AdminUser;
 
 #[derive(Clone)]
@@ -25,7 +25,11 @@ returning id, 用户名, 创建日期
 "#,
 				&[&username, &password, &salt],
 			)
-			.await?
+			.await
+			.map_err(|e| match e {
+				Error::CatchE(_) => Error::BadRequestE("该账号已被注册".into()),
+				_ => e,
+			})?
 			.throw_msg("创建管理员失败！")
 	}
 }
