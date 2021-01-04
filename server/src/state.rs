@@ -4,15 +4,18 @@
 use deadpool_postgres::{Manager, ManagerConfig, Pool, RecyclingMethod};
 use tokio_postgres::{Config, NoTls};
 
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 
 use crate::config::ServerConf;
 use crate::helper::{db::DB, user};
+use crate::t::SiteInfo;
 
 #[derive(Clone)]
 pub struct State {
 	/// 网站配置，保留下来，万一日后有用呢？
 	pub conf: Arc<ServerConf>,
+	/// 网站信息。
+	pub info: Arc<Mutex<Option<SiteInfo>>>,
 	/// 数据库连接池。
 	pub db: DB,
 	/// 用户相关数据操作。
@@ -41,6 +44,7 @@ impl State {
 
 		Self {
 			db,
+			info: Arc::new(Mutex::new(SiteInfo::load())),
 			user,
 			conf: Arc::new(config.clone()),
 		}

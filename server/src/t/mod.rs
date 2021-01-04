@@ -115,7 +115,7 @@ impl FromRequest for SessionUser {
 /// 网站配置信息。
 ///
 /// 在网站初始、启动时都会读入内存，并能在运行时更改。
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize, Serialize, Clone)]
 pub struct SiteInfo {
 	#[serde(rename = "标题")]
 	pub title: String,
