@@ -11,7 +11,7 @@ use std::ops::DerefMut;
 use crate::bad_request;
 use crate::error::{Error, Res};
 use crate::state::State;
-use crate::t::{AdminUser, SiteInfo};
+use crate::t::SiteInfo;
 
 #[derive(Deserialize)]
 struct RegistBody {
@@ -27,11 +27,11 @@ struct RegistBody {
 
 /// 第一次初始化时调用该接口。
 #[post("/regist")]
-async fn regist(state: Data<State>, body: Json<RegistBody>) -> Res<Json<AdminUser>> {
+async fn regist(state: Data<State>, body: Json<RegistBody>) -> Res<Json<SiteInfo>> {
 	let mut info = state.info.lock()?;
 	bad_request!(info.is_some(), "该接口已关闭！");
 
-	let user = state
+	state
 		.admin
 		.create_user(&body.username, &body.password, &state.conf.salt)
 		.await?;
@@ -43,9 +43,9 @@ async fn regist(state: Data<State>, body: Json<RegistBody>) -> Res<Json<AdminUse
 	};
 
 	next_info.save()?;
-	info.deref_mut().replace(next_info);
+	info.deref_mut().replace(next_info.clone());
 
-	Ok(Json(user))
+	Ok(Json(next_info))
 }
 
 /// 注册新管理员。
