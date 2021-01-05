@@ -1,7 +1,6 @@
 import React, { useState, useEffect} from "react";
 import {
-	Layout,
-	Alert,
+	Result,
 	Skeleton
 } from "antd";
 import * as R from "rambda";
@@ -14,6 +13,19 @@ import { fmap } from "./lib/util";
 import fetch from "./lib/shttp";
 
 import { SiteInfoType } from "./Main/t";
+
+const CONTAINER_STYLE = {
+	margin: "40px auto",
+	width: "80%",
+};
+
+function Loading() {
+	return (
+		<div style={CONTAINER_STYLE}>
+			<Skeleton active paragraph={{ rows: 6 }} />
+		</div>
+	);
+}
 
 export default function Main() {
 	// Page (Maybe SiteInfo)
@@ -44,19 +56,17 @@ export default function Main() {
 				return <App />
 			}
 		}),
-		Page.unwrapOr(<Skeleton />)
+		Page.unwrapOr(<Loading />)
 	)(page)
 
 	const errView = fmap(err => (
-		<Alert message={err} type="error" />
+		<Result title={err.message} status="error" />
 	))(err);
 
 	return (
-		<Layout>
-			<Layout.Content>
-				{errView}
-				{contentView}
-			</Layout.Content>
-		</Layout>
+		<>
+			{errView}
+			{contentView}
+		</>
 	);
 }
