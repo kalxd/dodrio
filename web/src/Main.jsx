@@ -11,6 +11,7 @@ import Setup from "./Setup/Main";
 
 import * as Page from "./lib/page";
 import { fmap } from "./lib/util";
+import fetch from "./lib/shttp";
 
 import { SiteInfoType } from "./Main/t";
 
@@ -27,7 +28,6 @@ export default function Main() {
 		};
 
 		fetch("/_/info", init)
-			.then(r => r.json())
 			.then(fmap(SiteInfoType.fromJSON))
 			.then(Page.pure)
 			.then(setPage)
