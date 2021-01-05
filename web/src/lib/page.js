@@ -45,6 +45,9 @@ export const map = curry((f, x) => {
 	}
 });
 
+/**
+ * bind :: (a -> Page b) -> Page a -> Page b
+ */
 export const bind = curry((f, x) => {
 	if (isLoading(x))  {
 		return x;
@@ -54,5 +57,17 @@ export const bind = curry((f, x) => {
 			view(PageType.contextLens),
 			f
 		)(x);
+	}
+});
+
+/**
+ * render :: ReactNode -> Page ReactNode -> ReactNode
+ */
+export const unwrapOr = curry((node, x) => {
+	if (isLoading(x)) {
+		return node;
+	}
+	else {
+		return view(PageType.contextLens, x);
 	}
 });
