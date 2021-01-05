@@ -1,11 +1,19 @@
 {
 	"scripts": {
 		"build": "npx webpack",
-		"watch": "npx webpack -w"
+		"watch": "npx webpack -w",
+		"test": "npx ava"
 	},
+	"ava": {
+		"nodeArguments": [
+			"--experimental-modules"
+		]
+	},
+	"type": "module",
 	"devDependencies": {
 		"@babel/core": "^7.12.9",
 		"@babel/preset-react": "^7.12.7",
+		"ava": "^3.15.0",
 		"babel-loader": "^8.2.2",
 		"css-loader": "^5.0.1",
 		"file-loader": "^6.2.0",
@@ -16,6 +24,7 @@
 	},
 	"dependencies": {
 		"antd": "^4.9.4",
+		"rambda": "^6.4.0",
 		"react": "^16.14.0",
 		"react-dom": "^16.14.0",
 		"react-router-dom": "^5.2.0"
