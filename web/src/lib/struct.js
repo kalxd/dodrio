@@ -2,16 +2,50 @@
  * 仿racket的struct，动中有静，静中有动。
  */
 import * as R from "rambda";
-import { unzip } from "./util";
+import { unzip3 } from "./util";
 
 /**
- * data SymLike = String | (String, String)
- * tr :: SymLink -> (String, String)
+ * 空白JSON转换器。
  */
-const tr = R.when(
-	R.is(String),
-	s => ([s, s])
-);
+const JsonIdentity = {
+	toJSON: R.identity,
+	fromJSON: R.identity
+};
+
+/**
+ * data SymLike = String | (String, String) | (String, Type) | (String, String, Type)
+ * tr :: SymLink -> (String, String, Type)
+ */
+const tr = field => {
+	if (R.is(String, field)) {
+		return [field, field, JsonIdentity];
+	}
+
+	const size = field.length;
+
+	if (size == 1) {
+		// ["x"]
+		const [x] = field;
+		return [x, x, JsonIdentity];
+	}
+	else if (size == 2) {
+		// ["x", ?]
+		const [x, y] = field;
+
+		if (R.is(String, y)) {
+			// ["x", "y"]
+			return [x, y, JsonIdentity];
+		}
+		else {
+			// ["x", Type]
+			return [x, x, y];
+		}
+	}
+	else {
+		// ["x", "y", Type]
+		return field;
+	}
+};
 
 /**
  * 接受一系列字段，能自动生成对应的结构体（object）。
@@ -25,15 +59,15 @@ const tr = R.when(
 export default function struct(...args) {
 	// 动态模块。
 	let M = {};
-	const [objKeys, jsonKeys] = R.pipe(
+	const [objKeys, jsonKeys, trs] = R.pipe(
 		R.map(tr),
-		unzip
+		unzip3
 	)(args);
 
 	/**
 	 * 值构造体。
 	 */
-	M.create = R.curryN(args.length, (...args) => {
+	M.gen = R.curryN(args.length, (...args) => {
 		const ps = R.zip(objKeys, args);
 		return R.fromPairs(ps);
 	});
@@ -44,7 +78,9 @@ export default function struct(...args) {
 	M.toJSON = R.compose(
 		R.fromPairs,
 		R.zip(jsonKeys),
-		R.values
+		R.map(([Type, x]) => Type.toJSON(x)),
+		R.zip(trs),
+		R.props(objKeys)
 	);
 
 	/**
@@ -53,7 +89,9 @@ export default function struct(...args) {
 	M.fromJSON = R.compose(
 		R.fromPairs,
 		R.zip(objKeys),
-		R.values
+		R.map(([Type, x]) => Type.fromJSON(x)),
+		R.zip(trs),
+		R.props(jsonKeys)
 	);
 
 	// 生成各个Lens

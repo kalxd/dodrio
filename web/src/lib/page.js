@@ -24,13 +24,13 @@ const isLoading = view(PageType.loadingLens);
  * empty :: Page a
  * 加载中的状态。
  */
-export const empty = PageType.create(true, null);
+export const empty = PageType.gen(true, null);
 
 /**
  * pure :: a -> Page a
  */
 export function pure(a) {
-	return PageType.create(false, a);
+	return PageType.gen(false, a);
 }
 
 /**
