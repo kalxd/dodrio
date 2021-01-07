@@ -31,9 +31,27 @@ export function unzip(xs) {
 	let as = [];
 	let bs = [];
 	for (const x of xs) {
-		as.push(x[0]);
-		bs.push(x[1]);
+		const [a, b] = x;
+		as.push(a);
+		bs.push(b);
 	}
 
 	return [as, bs];
+}
+
+/**
+ * unzip3 :: [(a, b, c)] -> ([a], [b], [c])
+ */
+export function unzip3(xs) {
+	let as = [];
+	let bs = [];
+	let cs = [];
+	for (const x of xs) {
+		const [a, b, c] = x;
+		as.push(a);
+		bs.push(b);
+		cs.push(c);
+	}
+
+	return [as, bs, cs];
 }
