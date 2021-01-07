@@ -10,7 +10,7 @@ import Setup from "./Setup/Main";
 
 import * as Page from "./lib/page";
 import { fmap } from "./lib/util";
-import fetch from "./lib/shttp";
+import fetch, { jsonHeader } from "./lib/shttp";
 
 import { SiteInfoType } from "./Main/t";
 
@@ -32,17 +32,19 @@ export default function Main() {
 	const [page, setPage] = useState(Page.empty);
 	const [err, setErr] = useState(null);
 
+	const setPageSite = R.compose(
+		setPage,
+		Page.pure
+	);
+
 	useEffect(() => {
 		const init = {
-			headers: {
-				"COntent-Type": "application/json"
-			}
+			headers: jsonHeader
 		};
 
 		fetch("/_/info", init)
 			.then(fmap(SiteInfoType.fromJSON))
-			.then(Page.pure)
-			.then(setPage)
+			.then(setPageSite)
 			.catch(setErr)
 		;
 	}, []);
@@ -50,7 +52,7 @@ export default function Main() {
 	const contentView = R.pipe(
 		Page.map(page => {
 			if (R.isNil(page)) {
-				return <Setup />
+				return <Setup onRegist={setPageSite} />
 			}
 			else {
 				return <App />

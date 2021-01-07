@@ -1,4 +1,11 @@
 /**
+ * 基本头部。
+ */
+export const jsonHeader = {
+	"Content-Type": "application/json"
+};
+
+/**
  * 简易fetch客户端，仅对返回格式加以处理。
  */
 export default async function(url, init) {

@@ -14,6 +14,12 @@ const _fmap = (...args) => {
 };
 
 /**
+ * noop :: a -> ()
+ * 什么也不做的函数。
+ */
+export function noop(_) {}
+
+/**
  * fmap :: (a -> z) -> Maybe a -> Maybe z
  */
 export const fmap = R.curryN(2, _fmap);
