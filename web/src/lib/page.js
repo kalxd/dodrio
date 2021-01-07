@@ -29,9 +29,7 @@ export const empty = PageType.gen(true, null);
 /**
  * pure :: a -> Page a
  */
-export function pure(a) {
-	return PageType.gen(false, a);
-}
+export const pure = PageType.gen(false);
 
 /**
  * map :: (a -> b) -> Page a -> Page b
