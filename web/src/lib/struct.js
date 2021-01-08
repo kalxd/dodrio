@@ -78,7 +78,14 @@ export default function struct(...args) {
 	M.toJSON = R.compose(
 		R.fromPairs,
 		R.zip(jsonKeys),
-		R.map(([Type, x]) => Type.toJSON(x)),
+		R.map(([Type, x]) => {
+			const f = R.cond([
+				[R.isNil, R.identity],
+				[R.is(Array), R.map(Type.toJSON)],
+				[R.T, Type.toJSON]
+			]);
+			return f(x);
+		}),
 		R.zip(trs),
 		R.props(objKeys)
 	);
@@ -89,7 +96,14 @@ export default function struct(...args) {
 	M.fromJSON = R.compose(
 		R.fromPairs,
 		R.zip(objKeys),
-		R.map(([Type, x]) => Type.fromJSON(x)),
+		R.map(([Type, x]) => {
+			const f = R.cond([
+				[R.isNil, R.identity],
+				[R.is(Array), R.map(Type.fromJSON)],
+				[R.T, Type.fromJSON]
+			]);
+			return f(x);
+		}),
 		R.zip(trs),
 		R.props(jsonKeys)
 	);
