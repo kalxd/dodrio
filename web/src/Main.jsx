@@ -11,8 +11,7 @@ import Setup from "./Setup/Main";
 import * as Page from "./lib/page";
 import { fmap } from "./lib/util";
 import fetch, { jsonHeader } from "./lib/shttp";
-
-import { SiteInfoType } from "./Main/t";
+import { SiteInfoType } from "./lib/t";
 
 const CONTAINER_STYLE = {
 	margin: "40px auto",
