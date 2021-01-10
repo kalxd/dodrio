@@ -1,5 +1,4 @@
 import React from "react";
-import { Alert } from "antd";
 import * as R from "rambda";
 
 import { fmap } from "../util";
@@ -9,6 +8,7 @@ import { fmap } from "../util";
  * type PropType = {
  *  error: Maybe Error | Maybe String
  *  title: Maybe String
+ *  onClose: Maybe () -> IO ()
  * }
  */
 function Error(prop) {

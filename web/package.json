@@ -23,7 +23,7 @@
 		"webpack-cli": "^4.2.0"
 	},
 	"dependencies": {
-		"antd": "^4.9.4",
+		"fomantic-ui-css": "^2.8.7",
 		"rambda": "^6.4.0",
 		"react": "^16.14.0",
 		"react-dom": "^16.14.0",
