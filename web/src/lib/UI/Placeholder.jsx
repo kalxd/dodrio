@@ -14,10 +14,10 @@ const lineRow = R.times(n => (
 export default function Placeholder() {
 	return (
 		<div className="ui fluid placeholder">
-			<div class="image header">
+			<div className="image header">
 				{lineRow(2)}
 			</div>
-			<div class="paragraph">
+			<div className="paragraph">
 				{lineRow(6)}
 			</div>
 		</div>
