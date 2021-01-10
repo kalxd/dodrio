@@ -4,7 +4,7 @@
 import struct from "./struct";
 
 /**
- * SiteInfo = {
+ * type SiteInfo = {
  *   title :: String
  *   desc :: String
  * }
@@ -12,4 +12,18 @@ import struct from "./struct";
 export const SiteInfoType = struct(
 	["title", "冈站标题"],
 	["desc", "网站描述"]
+);
+
+/**
+ * type E = String | Error
+ * type ErrorHookType = {
+ *  getError :: String
+ *  setError :: E -> ()
+ *  clearError :: () -> ()
+ * }
+ */
+export const ErrorHookType = struct(
+	"getError",
+	"setError",
+	"clearError"
 );

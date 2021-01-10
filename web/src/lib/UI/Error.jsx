@@ -6,34 +6,38 @@ import { fmap } from "../util";
 /**
  * 显示错误提示框，一般接受参数`Error`。
  * type PropType = {
- *  error: Maybe Error | Maybe String
+ *  error: ErrorHookType
  *  title: Maybe String
- *  onClose: Maybe () -> IO ()
+ *  onClose: Maybe (() -> IO ())
  * }
  */
 function Error(prop) {
-	const { error, title } = prop;
+	const { error, title, onClose } = prop;
+	const errorMsg = error.getError();
 
-	const view = fmap(
-		R.compose(
-			desc => (
-				<Alert
-					description={desc}
-					type="error"
-					message={title}
-					closable
-				/>
-			),
-			R.when(R.is(Error), e => e.message)
-		)
-	)(error);
+	if (R.isNil(errorMsg)) {
+		// 没有错误，就不用显示。
+		return null;
+	}
 
-	return view;
+	const closeClick = R.defaultTo(error.clearError, onClose);
+	const mTitle = fmap(title => (
+		<div class="headder">{title}</div>
+	))(title);
+
+	return (
+		<div class="ui message red">
+			<i onClick={closeClick} className="icon close" />
+			{mTitle}
+			<p>{error.getError()}</p>
+		</div>
+	);
 }
 
 Error.defaultProps = {
 	error: null,
-	title: null
+	title: null,
+	onClose: null
 };
 
 export default Error;
