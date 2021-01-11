@@ -1,11 +1,10 @@
 import React, { useState } from "react";
 import * as R from "rambda";
-import Form, { Field } from "rc-field-form";
 
-import struct from "../lib/struct";
 import Error from "../lib/UI/Error";
-import F from "../lib/UI/Field";
+import Form, { Field } from "../lib/UI/Form";
 import useError from "../lib/Hook/error";
+import struct from "../lib/struct";
 
 const SiteType = struct(
 	// String
@@ -18,12 +17,6 @@ const SiteType = struct(
 	["password", "密码"]
 );
 
-const onlyRequire = [
-	{
-		required: true
-	}
-];
-
 /**
  * 网站初始页面，第一次进入时出现，此后不再使用。
  * type PropType = {
@@ -32,8 +25,6 @@ const onlyRequire = [
  */
 function Setup(prop) {
 	const { onRegist } = prop;
-
-	const [form] = Form.useForm();
 	const error = useError();
 
 	const submitForm = value => {
@@ -42,7 +33,7 @@ function Setup(prop) {
 
 	return (
 		<div className="ui container">
-			<Form className="ui form" form={form} onFinish={submitForm}>
+			<Form className="ui form" onFinish={submitForm}>
 				<div className="ui message">
 					<div className="header">
 						马上完成！
@@ -54,32 +45,23 @@ function Setup(prop) {
 
 				<Error error={error} />
 
-				<div className="field required">
-					<label>网站名称</label>
-					<Field rules={onlyRequire} name="title">
-						<input placeholder="网站名称" />
-					</Field>
-				</div>
+				<Field require name="网站名称">
+					<input placeholder="网站名称" />
+				</Field>
 
-				<F require label="网站描述" name="title">
+				<Field require name="网站描述">
 					<textarea rows="3" placeholder="网站描述" />
-				</F>
+				</Field>
 
 				<div className="ui divider" />
 
-				<div className="field required">
-					<label>用户名</label>
-					<Field rules={onlyRequire} name="username">
-						<input placeholder="管理员用户名" />
-					</Field>
-				</div>
+				<Field require name="用户名">
+					<input placeholder="管理员用户名" />
+				</Field>
 
-				<div className="field required">
-					<label>密码</label>
-					<Field rules={onlyRequire} name="password">
-						<input type="password" placeholder="管理员登录密码" />
-					</Field>
-				</div>
+				<Field require name="密码">
+					<input type="password" placeholder="管理员登录密码" />
+				</Field>
 
 				<div className="field">
 					<button className="ui primary button" type="submit">提交</button>

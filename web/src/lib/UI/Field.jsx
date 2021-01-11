@@ -40,7 +40,8 @@ function Field(prop) {
 	} = prop;
 
 	const rules = [
-		{ required: require }
+		{ required: require },
+		...v
 	];
 
 	const fieldProp = {
@@ -60,7 +61,7 @@ function Field(prop) {
 
 				return (
 					<div className={pickClass("field", fieldKlass)}>
-						{drawLabel(label)}
+						{drawLabel(label || name)}
 						{children}
 						{drawError(error)}
 					</div>
@@ -71,7 +72,9 @@ function Field(prop) {
 }
 
 Field.defaultProps = {
-	label: ""
+	label: null,
+	require: false,
+	v: []
 };
 
 export default Field;
