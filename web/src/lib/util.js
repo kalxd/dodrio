@@ -55,3 +55,39 @@ export function unzip3(xs) {
 
 	return [as, bs, cs];
 }
+
+/**
+ * 挑选样式类。
+ * 接受一个基础类，再接受一个值都为Bool的object。
+ * 若object的值为true，它的key将作为样式类添到基础类中。
+ *
+ * ```js
+ * pickClass("ui button", { primary: true, danger: false })
+ * // "ui button primary"
+ * ```
+ */
+export function pickClass(base, prop) {
+	const baseKlass = base.trim();
+
+	const klass = R.pipe(
+		R.filter((v, _) => v),
+		R.keys,
+		R.join(" ")
+	)(prop);
+
+	if (R.isEmpty(baseKlass)) {
+		return klass;
+	}
+	else {
+		const ws = (klass => {
+			if (R.isEmpty(klass)) {
+				return "";
+			}
+			else {
+				return " "
+			}
+		})(klass);
+
+		return `${baseKlass}${ws}${klass}`;
+	}
+}

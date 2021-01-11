@@ -1,5 +1,9 @@
 import test from "ava";
-import { unzip, unzip3 } from "../src/lib/util";
+import {
+	unzip,
+	unzip3,
+	pickClass
+} from "../src/lib/util";
 
 test("unzip", t => {
 	const xs = [
@@ -28,4 +32,23 @@ test("unzip3", t => {
 	t.deepEqual([1, 2], axs);
 	t.deepEqual(["a", "b"], bxs);
 	t.deepEqual([10, 20], cxs);
+});
+
+test("pickClass", t => {
+	const k1 = {
+		primary: true,
+		danger: false
+	};
+
+	t.deepEqual("primary", pickClass("", k1))
+	t.deepEqual("button primary", pickClass("button", k1));
+
+	const k2 = {
+		primary: false,
+		danger: false,
+		label: false
+	};
+
+	t.deepEqual("button", pickClass("button", k2));
+	t.deepEqual("", pickClass("", k2));
 });
