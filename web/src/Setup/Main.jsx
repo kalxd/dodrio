@@ -4,6 +4,7 @@ import Form, { Field } from "rc-field-form";
 
 import struct from "../lib/struct";
 import Error from "../lib/UI/Error";
+import F from "../lib/UI/Field";
 import useError from "../lib/Hook/error";
 
 const SiteType = struct(
@@ -17,6 +18,12 @@ const SiteType = struct(
 	["password", "密码"]
 );
 
+const onlyRequire = [
+	{
+		required: true
+	}
+];
+
 /**
  * 网站初始页面，第一次进入时出现，此后不再使用。
  * type PropType = {
@@ -26,11 +33,16 @@ const SiteType = struct(
 function Setup(prop) {
 	const { onRegist } = prop;
 
+	const [form] = Form.useForm();
 	const error = useError();
+
+	const submitForm = value => {
+		console.log(value);
+	};
 
 	return (
 		<div className="ui container">
-			<Form className="ui form">
+			<Form className="ui form" form={form} onFinish={submitForm}>
 				<div className="ui message">
 					<div className="header">
 						马上完成！
@@ -44,36 +56,33 @@ function Setup(prop) {
 
 				<div className="field required">
 					<label>网站名称</label>
-					<Field name="title">
+					<Field rules={onlyRequire} name="title">
 						<input placeholder="网站名称" />
 					</Field>
 				</div>
 
-				<div className="field required">
-					<label>网站描述</label>
-					<Field name="desc">
-						<textarea rows="3" placeholder="网站描述" />
-					</Field>
-				</div>
+				<F require label="网站描述" name="title">
+					<textarea rows="3" placeholder="网站描述" />
+				</F>
 
 				<div className="ui divider" />
 
 				<div className="field required">
 					<label>用户名</label>
-					<Field name="username">
+					<Field rules={onlyRequire} name="username">
 						<input placeholder="管理员用户名" />
 					</Field>
 				</div>
 
 				<div className="field required">
 					<label>密码</label>
-					<Field name="password">
+					<Field rules={onlyRequire} name="password">
 						<input type="password" placeholder="管理员登录密码" />
 					</Field>
 				</div>
 
 				<div className="field">
-					<button className="ui primary button">提交</button>
+					<button className="ui primary button" type="submit">提交</button>
 				</div>
 			</Form>
 		</div>
