@@ -45,21 +45,21 @@ function Setup(prop) {
 
 				<Error error={error} />
 
-				<Field require name="网站名称">
+				<Field require label="网站名称" name="title">
 					<input placeholder="网站名称" />
 				</Field>
 
-				<Field require name="网站描述">
+				<Field require label="网站描述" name="desc">
 					<textarea rows="3" placeholder="网站描述" />
 				</Field>
 
 				<div className="ui divider" />
 
-				<Field require name="用户名">
+				<Field require label="用户名" name="username">
 					<input placeholder="管理员用户名" />
 				</Field>
 
-				<Field require name="密码">
+				<Field require label="密码" name="password">
 					<input type="password" placeholder="管理员登录密码" />
 				</Field>
 
