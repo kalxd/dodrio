@@ -25,6 +25,7 @@
 	"dependencies": {
 		"fomantic-ui-css": "^2.8.7",
 		"rambda": "^6.4.0",
+		"rc-field-form": "^1.17.3",
 		"react": "^16.14.0",
 		"react-dom": "^16.14.0",
 		"react-router-dom": "^5.2.0"
