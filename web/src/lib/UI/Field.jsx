@@ -4,7 +4,7 @@
 import React from "react";
 import { Field as FormField } from "rc-field-form";
 import * as R from "rambda";
-import { fmap } from "../util";
+import { fmap, pickClass } from "../util";
 
 /**
  * drawLabel :: Maybe String -> ReactNode
@@ -53,9 +53,13 @@ function Field(prop) {
 		<FormField {...fieldProp}>
 			{(_, meta, __) => {
 				const error = R.head(meta.errors);
+				const fieldKlass ={
+					error: !R.isNil(error),
+					required: require
+				};
 
 				return (
-					<div className="field">
+					<div className={pickClass("field", fieldKlass)}>
 						{drawLabel(label)}
 						{children}
 						{drawError(error)}
