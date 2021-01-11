@@ -20,6 +20,12 @@ const drawError = fmap(e => (
 	<div className="ui pointing red basic label">{e}</div>
 ));
 
+const valueLens = R.lensProp("value");
+
+const setDefaultValue = R.over(
+	valueLens,
+	R.defaultTo("")
+);
 
 /**
  * type PropType = {
@@ -52,17 +58,22 @@ function Field(prop) {
 
 	return (
 		<FormField {...fieldProp}>
-			{(_, meta, __) => {
+			{(control, meta, _) => {
 				const error = R.head(meta.errors);
 				const fieldKlass ={
 					error: !R.isNil(error),
 					required: require
 				};
 
+				const controlChildren = React.cloneElement(
+					children,
+					setDefaultValue(control)
+				);
+
 				return (
 					<div className={pickClass("field", fieldKlass)}>
 						{drawLabel(label || name)}
-						{children}
+						{controlChildren}
 						{drawError(error)}
 					</div>
 				);
