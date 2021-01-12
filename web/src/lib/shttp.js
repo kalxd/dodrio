@@ -3,29 +3,37 @@
  */
 import * as R from "rambda";
 
-export const jsonHeader = {
+/**
+ * defHeader :: FetchInitHeader
+ */
+export const defHeader = {
 	"Content-Type": "application/json"
 };
 
 /**
- * headerSeqWith :: HeaderMap -> [(HeaderMap -> HeaderMap)] -> HeaderMap
+ * defInit :: FetchInit
  */
-export const headerSeqWith = R.reduce((acc, f) => f(acc));
-
-/**
- * headerSeq :: ...(HeaderMap -> HeaderMap) ->
- */
-export const headerSeq = (...args) => {
-	return headerSeqWith(jsonHeader, args);
+export const defInit = {
+	headers: defHeader
 };
 
 /**
- * Add :: String -> String -> (HeaderMap -> HeaderMap)
+ * seqInitWith :: FetchInit -> [(FetchInit -> FetchInit)] -> FetchInit
  */
-export const Add = R.assoc;
+export const seqInitWith = R.reduce((acc, f) => f(acc));
 
 /**
- * AddWhen :: Bool -> String -> String -> (HeaderMap -> HeaderMap)
+ * seqInit :: [(FetchInit -> FetchInit)] -> FetchInit
+ */
+export const seqInit = (...fs) => seqInitWith(defInit, fs);
+
+/**
+ * Add :: String -> String -> (FetchInit -> FetchInit)
+ */
+export const Add = R.assocPath;
+
+/**
+ * AddWhen :: Bool -> String -> String -> (FetchInit -> FetchInit)
  */
 export const AddWhen = R.curry((b, key, value) => {
 	if (b) {
@@ -37,12 +45,33 @@ export const AddWhen = R.curry((b, key, value) => {
 });
 
 /**
- * Rem :: String -> (HeaderMap -> HeaderMap)
+ * SetMethod :: String -> FetchInit -> FetchInit
+ */
+export const SetMethod = Add("method");
+
+/**
+ * SetBody :: JSON a => a -> FetchInit -> FetchInit
+ */
+export const SetBody = R.compose(
+	JSON.stringify,
+	Add("body")
+);
+
+/**
+ * AddHeader :: String -> String -> FetchInit -> FetchInit
+ */
+export const AddHeader = R.curry((key, value) => {
+	const path = `headers.${key}`;
+	return Add(path, value);
+});
+
+/**
+ * Rem :: String -> (FetchInit -> FetchInit)
  */
 export const Rem = R.dissoc;
 
 /**
- * RemWhen :: Bool -> String -> (HeaderMap -> HeaderMap)
+ * RemWhen :: Bool -> String -> (FetchInit -> FetchInit)
  */
 export const RemWhen = R.curry((b, key) => {
 	if (b) {
