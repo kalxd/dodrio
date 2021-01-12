@@ -28,7 +28,8 @@ function Setup(prop) {
 	const error = useError();
 
 	const submitForm = value => {
-		console.log(value);
+		const body = SiteType.toJSON(value);
+		console.log(body);
 	};
 
 	return (
