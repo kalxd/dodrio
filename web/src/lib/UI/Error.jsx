@@ -3,6 +3,8 @@ import * as R from "rambda";
 
 import { fmap } from "../util";
 
+import useError from "../Hook/error";
+
 /**
  * 显示错误提示框，一般接受参数`Error`。
  * type PropType = {
@@ -39,5 +41,7 @@ Error.defaultProps = {
 	title: null,
 	onClose: null
 };
+
+Error.useError = useError;
 
 export default Error;
