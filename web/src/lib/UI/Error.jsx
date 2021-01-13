@@ -29,7 +29,7 @@ function Error(prop) {
 		<div className="ui message red">
 			<i onClick={closeClick} className="icon close" />
 			{mTitle}
-			<p>{error.getError()}</p>
+			{error.getError()}
 		</div>
 	);
 }
