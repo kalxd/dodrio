@@ -1,19 +1,84 @@
-/**
- * 主界面。
- */
-import React from "react";
-import { BrowserRouter } from "react-router-dom";
-import { ConfigProvider } from "antd";
-import locale from "antd/lib/locale/zh_CN";
+import React, { useState, useEffect, useContext } from "react";
+import { Route, Switch } from "react-router-dom";
+import * as R from "rambda";
 
-import Main from "./Main/Main";
+import Placeholder from "./lib/UI/Placeholder";
+import Error from "./lib/UI/Error";
+import { SiteInfoCtx } from "./lib/UI/SiteInfo";
+
+import * as PageType from "./lib/page";
+import { fmap } from "./lib/util";
+import useError from "./lib/Hook/error";
+import fetch, { SetGet, seqInit } from "./lib/shttp";
+import { SiteInfoType } from "./lib/t";
+
+import Setup from "./Setup/Main";
+import {default as MainApp } from "./Main/Main";
+
+const Box = ({ children }) => (
+	<div className="ui container">
+		{children}
+	</div>
+);
+
+function Router() {
+	return (
+		<Switch>
+			<Route path="/admin">
+				<h1>hello admin</h1>
+			</Route>
+
+			<Route path="/">
+				<MainApp />
+			</Route>
+		</Switch>
+	);
+}
 
 export default function App() {
+	// PageType (Maybe SiteInfoType)
+	const [page, setPage] = useState(PageType.empty);
+	const error = useError();
+	const [_, setSite] = useContext(SiteInfoCtx);
+
+	const setSitePage = R.compose(
+		setPage,
+		PageType.pure,
+		R.tap(setSite)
+	);
+
+	useEffect(() => {
+		const init = seqInit(
+			SetGet
+		);
+
+		fetch("/_/info", init)
+			.then(fmap(SiteInfoType.fromJSON))
+			.then(setSitePage)
+			.catch(error.setError)
+		;
+	}, []);
+
+	const view = R.pipe(
+		PageType.map(page => {
+			if (R.isNil(page)) {
+				return (<Setup onRegist={setSitePage} />)
+			}
+			else {
+				return (<Router />);
+			}
+		}),
+		PageType.unwrapOr((
+			<Box>
+				<Placeholder />
+			</Box>
+		))
+	)(page);
+
 	return (
-		<BrowserRouter>
-			<ConfigProvider locale={locale}>
-				<Main />
-			</ConfigProvider>
-		</BrowserRouter>
+		<>
+			<Error error={error} />
+			{view}
+		</>
 	);
 }
