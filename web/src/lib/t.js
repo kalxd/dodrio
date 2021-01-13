@@ -10,8 +10,8 @@ import struct from "./struct";
  * }
  */
 export const SiteInfoType = struct(
-	["title", "冈站标题"],
-	["desc", "网站描述"]
+	["title", "标题"],
+	["desc", "描述"]
 );
 
 /**

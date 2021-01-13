@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import * as R from "rambda";
 
 import Placeholder from "./lib/UI/Placeholder";
 import Error from "./lib/UI/Error";
+import { SiteInfoCtx } from "./lib/UI/SiteInfo";
 
 import * as PageType from "./lib/page";
 import { fmap } from "./lib/util";
@@ -39,11 +40,12 @@ function App() {
 	// PageType (Maybe SiteInfoType)
 	const [page, setPage] = useState(PageType.empty);
 	const error = useError();
+	const [_, setSite] = useContext(SiteInfoCtx);
 
 	const setSitePage = R.compose(
 		setPage,
 		PageType.pure,
-		fmap(SiteInfoType.fromJSON)
+		R.tap(setSite)
 	);
 
 	useEffect(() => {
@@ -52,6 +54,7 @@ function App() {
 		);
 
 		fetch("/_/info", init)
+			.then(fmap(SiteInfoType.fromJSON))
 			.then(setSitePage)
 			.catch(error.setError)
 		;
@@ -75,9 +78,7 @@ function App() {
 
 	return (
 		<>
-			<Box>
-				<Error error={error} />
-			</Box>
+			<Error error={error} />
 			{view}
 		</>
 	);

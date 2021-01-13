@@ -14,6 +14,11 @@ const _fmap = (...args) => {
 };
 
 /**
+ * isJust :: Maybe a -> Bool
+ */
+export const isJust = R.complement(R.isNil);
+
+/**
  * fmap :: (a -> z) -> Maybe a -> Maybe z
  */
 export const fmap = R.curryN(2, _fmap);
