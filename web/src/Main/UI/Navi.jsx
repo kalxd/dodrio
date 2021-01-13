@@ -19,7 +19,7 @@ export default function Navi() {
 						</Link>
 					</div>
 					<div className="item">
-						<Link to="/signin" className="ui blue button">
+						<Link to="/signup" className="ui blue button">
 							注册
 						</Link>
 					</div>

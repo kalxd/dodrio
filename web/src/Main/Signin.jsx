@@ -2,51 +2,57 @@
  * 注册界面。
  */
 import React from "react";
-import {
-	Form,
-	Input,
-	Button,
-	Typography
-} from "antd";
 
-const itemRule = [
-	{
-		required: true
-	}
-];
+import Form, { Field } from "../lib/UI/Form";
+import Error from "../lib/UI/Error";
+
+import struct from "../lib/struct"
+import useError from "../lib/Hook/error";
+
+/**
+ * type FormType = {
+ *  username :: String
+ *  password :: String
+ *  repassword :: String
+ * }
+ */
+const FormType = struct(
+	["account", "账号"],
+	["password", "密码"],
+	["repassword", "确认密码"],
+	["username", "用户名"],
+	["email", "电子邮箱"]
+);
 
 export default function Signup() {
-	const [form] = Form.useForm();
 
 	return (
-		<>
-			<Typography.Title>注册新账号</Typography.Title>
+		<Form>
+			<div className="ui header">
+				注册新用户
+			</div>
 
-			<Form form={form} layout="vertical">
-				<Form.Item
-					label="用户名"
-					name="username"
-					required
-					rules={itemRule}
-				>
-					<Input placeholder="用户名" />
-				</Form.Item>
+			<Field
+				label="用户名"
+				name="username"
+				require
+			>
+					<input placeholder="用户名" />
+			</Field>
 
-				<Form.Item
-					label="密码"
-					name="password"
-					required
-					rules={itemRule}
-				>
-					<Input.Password placeholder="登录密码" />
-				</Form.Item>
+			<Field
+				label="密码"
+				name="password"
+				require
+			>
+				<input type="password" placeholder="登录密码" />
+			</Field>
 
-				<Form.Item>
-					<Button type="primary" htmlType="submit">
-						注册
-					</Button>
-				</Form.Item>
-			</Form>
-		</>
+			<Field>
+				<button type="submit">
+					注册
+				</button>
+			</Field>
+		</Form>
 	);
 }
