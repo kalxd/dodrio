@@ -6,7 +6,7 @@ import Form, { Field } from "../lib/UI/Form";
 import useError from "../lib/Hook/error";
 import struct from "../lib/struct";
 import fetch, {
-	SetMethod,
+	SetBody,
 	SetPost,
 	seqInit
 } from "../lib/shttp";

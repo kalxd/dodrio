@@ -75,12 +75,17 @@ export const SetPatch = SetMethod("PATCH");
 export const SetDelete = SetMethod("DELETE");
 
 /**
- * SetBody :: JSON a => a -> FetchInit -> FetchInit
+ * SetBody :: JSON a => Maybe a -> FetchInit -> FetchInit
  */
-export const SetBody = R.compose(
-	JSON.stringify,
-	Add("body")
-);
+export const SetBody = value => {
+	if (R.isNil(value)) {
+		return R.identity;
+	}
+	else {
+		const body = JSON.stringify(value);
+		return Add("body", body);
+	}
+};
 
 /**
  * AddHeader :: String -> String -> FetchInit -> FetchInit

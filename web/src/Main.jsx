@@ -44,7 +44,7 @@ function App() {
 	const view = R.pipe(
 		PageType.map(page => {
 			if (R.isNil(page)) {
-				return (<Setup />)
+				return (<Setup onRegist={setSitePage} />)
 			}
 			else {
 				return (<h1>hello world</h1>);
