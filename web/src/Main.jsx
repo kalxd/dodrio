@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 import * as R from "rambda";
 
 import Placeholder from "./lib/UI/Placeholder";
@@ -12,12 +13,27 @@ import { SiteInfoType } from "./lib/t";
 
 import Provider from "./Provider";
 import Setup from "./Setup/Main";
+import {default as MainApp } from "./Main/Main";
 
 const Box = ({ children }) => (
 	<div className="ui container">
 		{children}
 	</div>
 );
+
+function Router() {
+	return (
+		<Switch>
+			<Route path="/admin">
+				<h1>hello admin</h1>
+			</Route>
+
+			<Route path="/">
+				<MainApp />
+			</Route>
+		</Switch>
+	);
+}
 
 function App() {
 	// PageType (Maybe SiteInfoType)
@@ -47,7 +63,7 @@ function App() {
 				return (<Setup onRegist={setSitePage} />)
 			}
 			else {
-				return (<h1>hello world</h1>);
+				return (<Router />);
 			}
 		}),
 		PageType.unwrapOr((
@@ -69,8 +85,10 @@ function App() {
 
 export default function Main() {
 	return (
-		<Provider>
-			<App />
-		</Provider>
+		<BrowserRouter>
+			<Provider>
+				<App />
+			</Provider>
+		</BrowserRouter>
 	);
 }
