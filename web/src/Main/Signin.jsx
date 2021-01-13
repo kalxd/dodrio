@@ -3,11 +3,10 @@
  */
 import React from "react";
 
-import Form, { Field } from "../lib/UI/Form";
+import Form from "../lib/UI/Form";
 import Error from "../lib/UI/Error";
 
 import struct from "../lib/struct"
-import useError from "../lib/Hook/error";
 
 /**
  * type FormType = {
@@ -32,27 +31,27 @@ export default function Signup() {
 				注册新用户
 			</div>
 
-			<Field
+			<Form.Field
 				label="用户名"
 				name="username"
 				require
 			>
 					<input placeholder="用户名" />
-			</Field>
+			</Form.Field>
 
-			<Field
+			<Form.Field
 				label="密码"
 				name="password"
 				require
 			>
 				<input type="password" placeholder="登录密码" />
-			</Field>
+			</Form.Field>
 
-			<Field>
+			<Form.Field>
 				<button type="submit">
 					注册
 				</button>
-			</Field>
+			</Form.Field>
 		</Form>
 	);
 }

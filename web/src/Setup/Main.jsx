@@ -2,7 +2,7 @@ import React from "react";
 import * as R from "rambda";
 
 import Error from "../lib/UI/Error";
-import Form, { Field } from "../lib/UI/Form";
+import Form from "../lib/UI/Form";
 import useError from "../lib/Hook/error";
 import struct from "../lib/struct";
 import fetch, {
@@ -49,7 +49,7 @@ function Setup(prop) {
 
 	return (
 		<div className="ui container">
-			<Form className="ui form" onFinish={submitForm}>
+			<Form onFinish={submitForm}>
 				<div className="ui message">
 					<div className="header">
 						马上完成！
@@ -61,23 +61,23 @@ function Setup(prop) {
 
 				<Error error={error} />
 
-				<Field require label="网站名称" name="title">
+				<Form.Field require label="网站名称" name="title">
 					<input placeholder="网站名称" />
-				</Field>
+				</Form.Field>
 
-				<Field require label="网站描述" name="desc">
+				<Form.Field require label="网站描述" name="desc">
 					<textarea rows="3" placeholder="网站描述" />
-				</Field>
+				</Form.Field>
 
 				<div className="ui divider" />
 
-				<Field require label="用户名" name="username">
+				<Form.Field require label="用户名" name="username">
 					<input placeholder="管理员用户名" />
-				</Field>
+				</Form.Field>
 
-				<Field require label="密码" name="password">
+				<Form.Field require label="密码" name="password">
 					<input type="password" placeholder="管理员登录密码" />
-				</Field>
+				</Form.Field>
 
 				<div className="field">
 					<button className="ui primary button" type="submit">提交</button>
