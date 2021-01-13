@@ -3,7 +3,7 @@ use actix_web::{
 	web::{Data, Json},
 	Scope,
 };
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 
 use std::convert::TryInto;
 
@@ -15,12 +15,17 @@ use crate::t::{
 	Me, SessionUser,
 };
 
-#[derive(Deserialize, Serialize)]
+#[derive(Deserialize)]
 struct SignupBody {
+	#[serde(rename = "账号")]
 	account: String,
+	#[serde(rename = "密码")]
 	password: String,
+	#[serde(rename = "确认密码")]
 	repassword: String,
+	#[serde(rename = "用户名")]
 	username: Option<String>,
+	#[serde(rename = "电子邮箱")]
 	email: String,
 }
 
