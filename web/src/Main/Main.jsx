@@ -3,6 +3,7 @@ import { Route, Switch } from "react-router-dom";
 
 import Navi from "./UI/Navi";
 import MeProvider from "./UI/Me";
+import NotFound from "../lib/UI/NotFound";
 
 export default function Main() {
 	return (
@@ -11,7 +12,7 @@ export default function Main() {
 			<div className="ui container">
 				<Switch>
 					<Route path="*">
-						<h1>hello world</h1>
+						<NotFound />
 					</Route>
 				</Switch>
 			</div>

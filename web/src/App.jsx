@@ -28,7 +28,7 @@ function Router() {
 				<h1>hello admin</h1>
 			</Route>
 
-			<Route path="/">
+			<Route path="*">
 				<MainApp />
 			</Route>
 		</Switch>
