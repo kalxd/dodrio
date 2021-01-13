@@ -50,6 +50,31 @@ export const AddWhen = R.curry((b, key, value) => {
 export const SetMethod = Add("method");
 
 /**
+ * SetGet :: FetchInit -> FetchInit
+ */
+export const SetGet = SetMethod("GET");
+
+/**
+ * SetPost :: FetchInit -> FetchInit
+ */
+export const SetPost = SetMethod("POST");
+
+/**
+ * SetPut :: FetchInit -> FetchInit
+ */
+export const SetPut = SetMethod("PUT");
+
+/**
+ * SetPatch :: FetchInit -> FetchInit
+ */
+export const SetPatch = SetMethod("PATCH");
+
+/**
+ * SetDelete :: FetchInit -> FetchInit
+ */
+export const SetDelete = SetMethod("DELETE");
+
+/**
  * SetBody :: JSON a => a -> FetchInit -> FetchInit
  */
 export const SetBody = R.compose(

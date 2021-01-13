@@ -4,7 +4,7 @@
 import struct from "./struct";
 
 /**
- * type SiteInfo = {
+ * type SiteInfoType = {
  *   title :: String
  *   desc :: String
  * }

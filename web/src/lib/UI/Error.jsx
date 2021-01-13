@@ -22,11 +22,11 @@ function Error(prop) {
 
 	const closeClick = R.defaultTo(error.clearError, onClose);
 	const mTitle = fmap(title => (
-		<div class="headder">{title}</div>
+		<div className="headder">{title}</div>
 	))(title);
 
 	return (
-		<div class="ui message red">
+		<div className="ui message red">
 			<i onClick={closeClick} className="icon close" />
 			{mTitle}
 			<p>{error.getError()}</p>

@@ -1,10 +1,15 @@
-import React, { useState } from "react";
+import React from "react";
 import * as R from "rambda";
 
 import Error from "../lib/UI/Error";
 import Form, { Field } from "../lib/UI/Form";
 import useError from "../lib/Hook/error";
 import struct from "../lib/struct";
+import fetch, {
+	SetMethod,
+	SetPost,
+	seqInit
+} from "../lib/shttp";
 
 const SiteType = struct(
 	// String
@@ -27,9 +32,19 @@ function Setup(prop) {
 	const { onRegist } = prop;
 	const error = useError();
 
+	// submitForm :: SiteType -> IO ()
 	const submitForm = value => {
 		const body = SiteType.toJSON(value);
-		console.log(body);
+
+		const init = seqInit(
+			SetBody(body),
+			SetPost
+		);
+
+		fetch("/_/admin/regist", init)
+			.then(onRegist)
+			.catch(error.setError)
+		;
 	};
 
 	return (
