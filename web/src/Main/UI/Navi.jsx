@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { NavLink, Link } from "react-router-dom";
-import { SiteInfoCtx } from "../../lib/UI/SiteInfo";
+import { SiteInfoCtx } from "../../Lib/UI/SiteInfo";
 
 export default function Navi() {
 	const [site] = useContext(SiteInfoCtx);

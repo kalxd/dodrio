@@ -1,15 +1,15 @@
 import React from "react";
 import * as R from "rambda";
 
-import Error from "../lib/UI/Error";
-import Form from "../lib/UI/Form";
-import useError from "../lib/Hook/error";
-import struct from "../lib/struct";
+import Error from "../Lib/UI/Error";
+import Form from "../Lib/UI/Form";
+import useError from "../Lib/Hook/error";
+import struct from "../Lib/struct";
 import fetch, {
 	SetBody,
 	SetPost,
 	seqInit
-} from "../lib/shttp";
+} from "../Lib/shttp";
 
 const SiteType = struct(
 	// String

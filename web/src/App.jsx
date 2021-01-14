@@ -2,15 +2,15 @@ import React, { useState, useEffect, useContext } from "react";
 import { Route, Switch } from "react-router-dom";
 import * as R from "rambda";
 
-import Placeholder from "./lib/UI/Placeholder";
-import Error from "./lib/UI/Error";
-import { SiteInfoCtx } from "./lib/UI/SiteInfo";
+import Placeholder from "./Lib/UI/Placeholder";
+import Error from "./Lib/UI/Error";
+import { SiteInfoCtx } from "./Lib/UI/SiteInfo";
 
-import * as PageType from "./lib/page";
-import { fmap } from "./lib/util";
-import useError from "./lib/Hook/error";
-import fetch, { SetGet, seqInit } from "./lib/shttp";
-import { SiteInfoType } from "./lib/t";
+import * as PageType from "./Lib/page";
+import { fmap } from "./Lib/util";
+import useError from "./Lib/Hook/error";
+import fetch, { SetGet, seqInit } from "./Lib/shttp";
+import { SiteInfoType } from "./Lib/t";
 
 import Setup from "./Setup/Main";
 import {default as MainApp } from "./Main/Main";

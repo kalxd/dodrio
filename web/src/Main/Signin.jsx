@@ -3,10 +3,10 @@
  */
 import React from "react";
 
-import Form from "../lib/UI/Form";
-import Error from "../lib/UI/Error";
+import Form from "../Lib/UI/Form";
+import Error from "../Lib/UI/Error";
 
-import struct from "../lib/struct"
+import struct from "../Lib/struct"
 
 /**
  * type FormType = {

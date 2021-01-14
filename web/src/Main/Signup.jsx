@@ -3,7 +3,7 @@
  */
 import React from "react";
 
-import Form from "../lib/UI/Form";
+import Form from "../Lib/UI/Form";
 
 export default function Signup() {
 	const submitForm = data => {

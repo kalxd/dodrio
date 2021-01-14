@@ -3,7 +3,7 @@ import { Route, Switch } from "react-router-dom";
 
 import Navi from "./UI/Navi";
 import MeProvider from "./UI/Me";
-import NotFound from "../lib/UI/NotFound";
+import NotFound from "../Lib/UI/NotFound";
 
 import Signup from "./Signup";
 

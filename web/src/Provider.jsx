@@ -1,7 +1,7 @@
 import React from "react";
 import { FormProvider } from "rc-field-form";
 
-import SiteInfoProvider from "./lib/UI/SiteInfo";
+import SiteInfoProvider from "./Lib/UI/SiteInfo";
 
 const vMessage = {
 	required: "此处必填"
