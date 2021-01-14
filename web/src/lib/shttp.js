@@ -96,6 +96,18 @@ export const AddHeader = R.curry((key, value) => {
 });
 
 /**
+ * AddHeaderWhen :: Bool -> String -> String -> FetchInit -> FetchInit
+ */
+export const AddHeaderWhen = R.curry((b, key, value) => {
+	if (b) {
+		return AddHeader(key, value);
+	}
+	else {
+		return R.identity;
+	}
+});
+
+/**
  * Rem :: String -> (FetchInit -> FetchInit)
  */
 export const Rem = R.dissoc;
