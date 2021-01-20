@@ -1,5 +1,5 @@
 //! 第三方库业务上的封装。
-use deadpool_postgres::{Pool, Transaction as PoolTransaction};
+use deadpool_postgres::Pool;
 use tokio_postgres::{
 	error::{Error as PGError, SqlState},
 	row::Row,
@@ -12,7 +12,7 @@ use std::convert::TryFrom;
 use crate::error::{CatchErr, Error, Res};
 
 // 内部错误转换，只为减少代码量。
-trait InnerErrorTransfer<T, E: std::error::Error> {
+pub(super) trait InnerErrorTransfer<T, E: std::error::Error> {
 	fn catch_db_dup(self) -> Res<T>;
 }
 
@@ -41,26 +41,6 @@ impl DB {
 		client.query(statement, params).await.catch_db_dup()
 	}
 
-	/// 尝试自动开启一个事务。
-	/// 当得到一个Ok，自动回滚。
-	pub async fn do_transaction<T, F, R>(self, f: F) -> Res<T>
-	where
-		F: Fn(&DBTransaction<'_>) -> R,
-		R: std::future::Future<Output = Res<T>>,
-	{
-		let mut client = self.get().await?;
-		let transaction = client.transaction().await?;
-		let transaction = DBTransaction(transaction);
-
-		let result = f(&transaction).await;
-
-		if result.is_err() {
-			transaction.0.rollback().await?;
-		}
-
-		return result;
-	}
-
 	/*
 	pub async fn query<T, R>(&'_ self, statement: &'_ T, params: &'_ [&'_ (dyn ToSql + '_ + Sync)]) -> Res<Vec<R>>
 	where
@@ -78,6 +58,7 @@ impl DB {
 	}
 	 */
 
+	#[inline]
 	pub async fn query_one<T, R>(
 		&'_ self,
 		statement: &'_ T,
@@ -127,33 +108,5 @@ impl std::ops::Deref for DB {
 
 	fn deref(&self) -> &Self::Target {
 		&self.0
-	}
-}
-
-/// postgresql事务再封装。
-pub struct DBTransaction<'a>(PoolTransaction<'a>);
-
-impl<'a> std::ops::Deref for DBTransaction<'a> {
-	type Target = PoolTransaction<'a>;
-
-	fn deref(&self) -> &Self::Target {
-		&self.0
-	}
-}
-
-impl DBTransaction<'_> {
-	pub async fn query_one<T, R>(
-		&'_ self,
-		statement: &'_ T,
-		params: &'_ [&'_ (dyn ToSql + '_ + Sync)],
-	) -> Res<Option<R>>
-	where
-		T: ToStatement + ?Sized,
-		R: TryFrom<Row>,
-		R::Error: std::error::Error,
-	{
-		let row = self.0.query_opt(statement, params).await.catch_db_dup()?;
-
-		row.map(TryFrom::try_from).transpose().map_err(Into::into)
 	}
 }

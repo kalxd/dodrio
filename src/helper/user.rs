@@ -1,9 +1,11 @@
-use super::db::DB;
+use super::db::{InnerErrorTransfer, DB};
 use dodrio_base::IsUser;
 
-use crate::error::{Error, Res, Throwable};
+use std::convert::TryFrom;
+
+use crate::error::{CatchErr, Error, Res, Throwable};
 use crate::t::{
-	mics::{SaveForUser, SessionSid},
+	mics::{SaveForUser, SessionSid, SessionWith},
 	Me,
 };
 
@@ -17,19 +19,44 @@ impl From<DB> for State {
 }
 
 impl State {
-	/// 创建新用户
-	pub async fn create_user(&self, data: &SaveForUser<'_>) -> Res<Me> {
-		self.0
-			.query_one(
-				r#"insert into 用户 (账号, 密码, 用户名, 电子邮箱) values ($1, md5($2 || $5), $3, $4) returning *"#,
-				&[&data.account, &data.password, &data.username, &data.email, &data.salt],
-			)
-			.await
-			.map_err(|e| match e {
-				Error::CatchE(_) => Error::BadRequestE("该账号已被注册。".into()),
-				_ => e,
-			})?
-			.throw_msg("注册用户失败")
+	/// 注册一个用户，并写入登录信息。
+	pub async fn signup(&self, data: &SaveForUser<'_>) -> Res<SessionWith<Me>> {
+		let mut client = self.0.get().await?;
+		let transaction = client.transaction().await?;
+		let user: Res<SessionWith<Me>> = async {
+			// 添加用户
+			let me: Me = transaction
+				.query_opt(
+					include_str!("../sql/user_create_user.sql"),
+					&[&data.account, &data.password, &data.username, &data.email, &data.salt],
+				)
+				.await
+				.catch_db_dup()?
+				.map(Me::try_from)
+				.transpose()?
+				.throw_msg("注册用户失败！")?;
+
+			// 添加登录信息。
+			let sid: SessionSid = transaction
+				.query_opt(include_str!("../sql/user_login.sql"), &[&data.account, &me.id])
+				.await?
+				.map(SessionSid::try_from)
+				.transpose()?
+				.throw_msg("登录失败！")?;
+
+			Ok(SessionWith { sid, data: me })
+		}
+		.await
+		.map_err(|e| match e {
+			Error::CatchE(CatchErr::DBDuplicate) => Error::BadRequestE("该用户已被注册！".into()),
+			_ => e,
+		});
+
+		if user.is_err() {
+			transaction.rollback().await?;
+		}
+
+		return user;
 	}
 
 	/// 验证用户，并返回全部信息。

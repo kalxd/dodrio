@@ -49,10 +49,8 @@ impl<'a> TryInto<SaveForUser<'a>> for &'a (&'a str, &'a SignupBody) {
 async fn signup_api(body: Json<SignupBody>, state: Data<State>) -> Res<Json<SessionWith<Me>>> {
 	let input: (&str, &SignupBody) = (state.conf.salt.as_ref(), &*body);
 	let save_data: SaveForUser = TryInto::try_into(&input)?;
-	let me = state.user.create_user(&save_data).await?;
-	let sid = state.user.login(&me).await?;
+	let session = state.user.signup(&save_data).await?;
 
-	let session = SessionWith { data: me, sid };
 	Ok(Json(session))
 }
 
