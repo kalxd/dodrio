@@ -43,16 +43,22 @@ impl DB {
 
 	/// 尝试自动开启一个事务。
 	/// 当得到一个Ok，自动回滚。
-	pub async fn try_transaction<T, F, R>(self, f: F) -> Res<T>
+	pub async fn do_transaction<T, F, R>(self, f: F) -> Res<T>
 	where
-		F: Fn(DBTransaction<'_>) -> R,
+		F: Fn(&DBTransaction<'_>) -> R,
 		R: std::future::Future<Output = Res<T>>,
 	{
 		let mut client = self.get().await?;
 		let transaction = client.transaction().await?;
 		let transaction = DBTransaction(transaction);
 
-		f(transaction).await
+		let result = f(&transaction).await;
+
+		if result.is_err() {
+			transaction.0.rollback().await?;
+		}
+
+		return result;
 	}
 
 	/*
@@ -126,3 +132,11 @@ impl std::ops::Deref for DB {
 
 /// postgresql事务再封装。
 pub struct DBTransaction<'a>(PoolTransaction<'a>);
+
+impl<'a> std::ops::Deref for DBTransaction<'a> {
+	type Target = PoolTransaction<'a>;
+
+	fn deref(&self) -> &Self::Target {
+		&self.0
+	}
+}
