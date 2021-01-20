@@ -1,10 +1,32 @@
 //! 第三方库业务上的封装。
-use deadpool_postgres::Pool;
-use tokio_postgres::{error::SqlState, row::Row, types::ToSql, ToStatement};
+use deadpool_postgres::{Pool, Transaction as PoolTransaction};
+use tokio_postgres::{
+	error::{Error as PGError, SqlState},
+	row::Row,
+	types::ToSql,
+	ToStatement,
+};
 
 use std::convert::TryFrom;
 
 use crate::error::{CatchErr, Error, Res};
+
+// 内部错误转换，只为减少代码量。
+trait InnerErrorTransfer<T, E: std::error::Error> {
+	fn catch_db_dup(self) -> Res<T>;
+}
+
+impl<T> InnerErrorTransfer<T, PGError> for Result<T, PGError> {
+	fn catch_db_dup(self) -> Res<T> {
+		self.map_err(|e| {
+			if e.code() == Some(&SqlState::UNIQUE_VIOLATION) {
+				return Error::CatchE(CatchErr::DBDuplicate);
+			} else {
+				return e.into();
+			}
+		})
+	}
+}
 
 #[derive(Clone)]
 pub struct DB(Pool);
@@ -16,13 +38,21 @@ impl DB {
 		T: ToStatement + ?Sized,
 	{
 		let client = self.get().await?;
-		client.query(statement, params).await.map_err(|e| {
-			if e.code() == Some(&SqlState::UNIQUE_VIOLATION) {
-				return Error::CatchE(CatchErr::DBDuplicate);
-			} else {
-				return e.into();
-			}
-		})
+		client.query(statement, params).await.catch_db_dup()
+	}
+
+	/// 尝试自动开启一个事务。
+	/// 当得到一个Ok，自动回滚。
+	pub async fn try_transaction<T, F, R>(self, f: F) -> Res<T>
+	where
+		F: Fn(DBTransaction<'_>) -> R,
+		R: std::future::Future<Output = Res<T>>,
+	{
+		let mut client = self.get().await?;
+		let transaction = client.transaction().await?;
+		let transaction = DBTransaction(transaction);
+
+		f(transaction).await
 	}
 
 	/*
@@ -93,3 +123,6 @@ impl std::ops::Deref for DB {
 		&self.0
 	}
 }
+
+/// postgresql事务再封装。
+pub struct DBTransaction<'a>(PoolTransaction<'a>);
