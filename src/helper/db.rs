@@ -140,3 +140,20 @@ impl<'a> std::ops::Deref for DBTransaction<'a> {
 		&self.0
 	}
 }
+
+impl DBTransaction<'_> {
+	pub async fn query_one<T, R>(
+		&'_ self,
+		statement: &'_ T,
+		params: &'_ [&'_ (dyn ToSql + '_ + Sync)],
+	) -> Res<Option<R>>
+	where
+		T: ToStatement + ?Sized,
+		R: TryFrom<Row>,
+		R::Error: std::error::Error,
+	{
+		let row = self.0.query_opt(statement, params).await.catch_db_dup()?;
+
+		row.map(TryFrom::try_from).transpose().map_err(Into::into)
+	}
+}
