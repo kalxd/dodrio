@@ -79,4 +79,13 @@ impl State {
 			.await?
 			.throw_msg("session创建失败，用户无法登录。")
 	}
+
+	/// 用户登出。
+	pub async fn logout<S: AsRef<str>>(&self, token: S) -> Res<()> {
+		self.0
+			.execute(r#"delete from 会话 where sid = $1"#, &[&token.as_ref()])
+			.await?;
+
+		Ok(())
+	}
 }

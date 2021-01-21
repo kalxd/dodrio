@@ -41,23 +41,6 @@ impl DB {
 		client.query(statement, params).await.catch_db_dup()
 	}
 
-	/*
-	pub async fn query<T, R>(&'_ self, statement: &'_ T, params: &'_ [&'_ (dyn ToSql + '_ + Sync)]) -> Res<Vec<R>>
-	where
-		T: ToStatement + ?Sized,
-		R: From<Row>,
-	{
-		let r = self
-			.raw_query(statement, params)
-			.await?
-			.into_iter()
-			.map(Into::into)
-			.collect();
-
-		Ok(r)
-	}
-	 */
-
 	#[inline]
 	pub async fn query_one<T, R>(
 		&'_ self,
@@ -74,27 +57,16 @@ impl DB {
 		rows.pop().map(R::try_from).transpose().map_err(Into::into)
 	}
 
-	/*
-	/// 仅用于单值的查询，例如查询用户是否存在。
-	///
-	/// ```
-	/// if db.query_b("select 1", &[]).await? {
-	///     println!("存在！");
-	/// } else {
-	///     println!("不存在！");
-	/// }
-	/// ```
-
-	pub async fn query_b<T>(&'_ self, statement: &'_ T, params: &'_ [&'_ (dyn ToSql + '_ + Sync)]) -> Res<bool>
+	#[inline]
+	pub async fn execute<T: ?Sized>(&self, statement: &T, params: &[&(dyn ToSql + Sync)]) -> Res<u64>
 	where
-		T: ToStatement + ?Sized,
+		T: ToStatement,
 	{
-		let mut rows = self.raw_query(statement, params).await?;
+		let client = self.get().await?;
 
-		let r = rows.pop().map(|row| row.get(0)).unwrap_or(false);
-		Ok(r)
+		let u = client.execute(statement, params).await?;
+		Ok(u)
 	}
-	 */
 }
 
 impl From<Pool> for DB {

@@ -82,6 +82,11 @@ async fn signin_api(
 	Ok(Json(session))
 }
 
+#[post("/logout")]
+async fn logout_api(session: SessionUser, state: Data<State>) -> Res<Json<()>> {
+	state.user.logout(session.sid).await.map(Json)
+}
+
 #[get("/me")]
 async fn me_api(session: Option<SessionUser>) -> Json<Option<Me>> {
 	let me = session.map(Into::into);
@@ -92,5 +97,6 @@ pub(super) fn build() -> Scope {
 	Scope::new("/user")
 		.service(signup_api)
 		.service(signin_api)
+		.service(logout_api)
 		.service(me_api)
 }
