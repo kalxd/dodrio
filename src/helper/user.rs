@@ -69,7 +69,7 @@ impl State {
 			.await
 	}
 
-	/// 用户尝试登录，并将信息写入“会话”。
+	/// 用户登录，并将信息写入“会话”。
 	pub async fn login<T: IsUser>(&self, user: &T) -> Res<SessionSid> {
 		let user_id = user.get_id();
 		let user_account = user.get_account();

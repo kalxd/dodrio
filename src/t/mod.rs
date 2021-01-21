@@ -62,6 +62,24 @@ pub struct SessionUser {
 	pub user: Me,
 }
 
+impl From<mics::SessionWith<Me>> for SessionUser {
+	fn from(session: mics::SessionWith<Me>) -> Self {
+		Self {
+			sid: session.sid.0,
+			user: session.data,
+		}
+	}
+}
+
+impl Into<mics::SessionWith<Me>> for SessionUser {
+	fn into(self) -> mics::SessionWith<Me> {
+		mics::SessionWith {
+			sid: mics::SessionSid(self.sid),
+			data: self.user,
+		}
+	}
+}
+
 impl<'a> TryFrom<&'a Row> for SessionUser {
 	type Error = PGError;
 

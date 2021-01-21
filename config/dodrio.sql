@@ -100,6 +100,38 @@ ALTER SEQUENCE public."用户_id_seq" OWNED BY public."用户".id;
 
 
 --
+-- Name: 管理员; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public."管理员" (
+    id integer NOT NULL,
+    "用户名" character varying(16) NOT NULL,
+    "密码" text NOT NULL,
+    "创建日期" timestamp(0) with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: 管理员_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public."管理员_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: 管理员_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public."管理员_id_seq" OWNED BY public."管理员".id;
+
+
+--
 -- Name: 版块 id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -114,19 +146,18 @@ ALTER TABLE ONLY public."用户" ALTER COLUMN id SET DEFAULT nextval('public."�
 
 
 --
+-- Name: 管理员 id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public."管理员" ALTER COLUMN id SET DEFAULT nextval('public."管理员_id_seq"'::regclass);
+
+
+--
 -- Name: 会话 会话_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public."会话"
     ADD CONSTRAINT "会话_pkey" PRIMARY KEY (sid);
-
-
---
--- Name: 会话 会话_用户id_un; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public."会话"
-    ADD CONSTRAINT "会话_用户id_un" UNIQUE ("用户id");
 
 
 --
@@ -151,6 +182,22 @@ ALTER TABLE ONLY public."用户"
 
 ALTER TABLE ONLY public."用户"
     ADD CONSTRAINT "用户_账号_key" UNIQUE ("账号");
+
+
+--
+-- Name: 管理员 管理员_pk; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public."管理员"
+    ADD CONSTRAINT "管理员_pk" PRIMARY KEY (id);
+
+
+--
+-- Name: 管理员 管理员_un; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public."管理员"
+    ADD CONSTRAINT "管理员_un" UNIQUE ("用户名");
 
 
 --

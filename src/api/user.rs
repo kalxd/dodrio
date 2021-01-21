@@ -61,7 +61,15 @@ struct SigninBody {
 }
 
 #[post("/signin")]
-async fn signin_api(body: Json<SigninBody>, state: Data<State>) -> Res<Json<SessionWith<Me>>> {
+async fn signin_api(
+	body: Json<SigninBody>,
+	session: Option<SessionUser>,
+	state: Data<State>,
+) -> Res<Json<SessionWith<Me>>> {
+	if let Some(user) = session {
+		return Ok(Json(user.into()));
+	}
+
 	let me = state
 		.user
 		.auth(&body.account, &body.password, &state.conf.salt)
