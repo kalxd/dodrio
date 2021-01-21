@@ -5,7 +5,7 @@ use tokio_postgres::{error::Error as PGError, row::Row};
 use std::convert::TryFrom;
 use std::ops::Deref;
 
-/// 该函数用于创建新用户，详见[`crate::helper::user::State::create_user`]。
+/// 该函数用于创建新用户，详见[`crate::helper::user::State::signup`]。
 pub struct SaveForUser<'a> {
 	/// 用户账号。
 	pub account: &'a str,
