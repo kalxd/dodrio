@@ -32,15 +32,6 @@ impl<T> InnerErrorTransfer<T, PGError> for Result<T, PGError> {
 pub struct DB(Pool);
 
 impl DB {
-	// 低等级查询函数，处理部分错误。
-	async fn raw_query<T>(&'_ self, statement: &'_ T, params: &'_ [&'_ (dyn ToSql + '_ + Sync)]) -> Res<Vec<Row>>
-	where
-		T: ToStatement + ?Sized,
-	{
-		let client = self.get().await?;
-		client.query(statement, params).await.catch_db_dup()
-	}
-
 	#[inline]
 	pub async fn query_one<T, R>(
 		&'_ self,
@@ -52,9 +43,13 @@ impl DB {
 		R: TryFrom<Row>,
 		R::Error: std::error::Error,
 	{
-		let mut rows = self.raw_query(statement, params).await?;
-
-		rows.pop().map(R::try_from).transpose().map_err(Into::into)
+		let client = self.get().await?;
+		client
+			.query_opt(statement, params)
+			.await?
+			.map(R::try_from)
+			.transpose()
+			.map_err(Into::into)
 	}
 
 	#[inline]
