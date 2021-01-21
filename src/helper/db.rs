@@ -46,7 +46,8 @@ impl DB {
 		let client = self.get().await?;
 		client
 			.query_opt(statement, params)
-			.await?
+			.await
+			.catch_db_dup()?
 			.map(R::try_from)
 			.transpose()
 			.map_err(Into::into)
